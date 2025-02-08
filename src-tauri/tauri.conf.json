@@ -1,0 +1,38 @@
+{
+	"$schema": "https://schema.tauri.app/config/2",
+	"productName": "mpass-desktop",
+	"version": "../package.json",
+	"identifier": "dev.mPass.app",
+	"build": {
+		"beforeDevCommand": "bun run dev",
+		"devUrl": "http://localhost:1420",
+		"beforeBuildCommand": "bun run build",
+		"frontendDist": "../build"
+	},
+	"app": {
+		"windows": [
+			{
+				"title": "mPass",
+				"width": 1152,
+				"height": 648,
+				"minWidth": 1024,
+				"minHeight": 576,
+				"center": true
+			}
+		],
+		"security": {
+			"csp": null
+		}
+	},
+	"bundle": {
+		"active": true,
+		"targets": "all",
+		"icon": [
+			"icons/32x32.png",
+			"icons/128x128.png",
+			"icons/128x128@2x.png",
+			"icons/icon.icns",
+			"icons/icon.ico"
+		]
+	}
+}

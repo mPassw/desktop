@@ -1,0 +1,31 @@
+[package]
+name = "mpass-desktop"
+version = "1.0.0"
+description = "mPass Desktop"
+authors = ["mPass.dev"]
+edition = "2021"
+
+[lib]
+name = "mpass_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tauri-plugin-store = "2"
+argon2 = "0.5.3"
+hex = "0.4.3"
+base64 = "0.22.1"
+tauri-plugin-http = "2"
+tauri-plugin-os = "2"
+num-bigint = "0.4.6"
+rand = "0.9.0"
+chacha = "0.4.0"
+tokio = { version = "1.43.0", features = ["full"] }
+keyring = { version = "3.6.1", features = ["apple-native", "windows-native", "sync-secret-service"] }
+
