@@ -1,0 +1,58 @@
+<script lang="ts">
+	import * as Avatar from "$lib/components/ui/avatar";
+	import passwords from "@/state/passwords.svelte";
+	import Icon from "@iconify/svelte";
+
+	import { Badge } from "@/components/ui/badge";
+	import type { Password } from "@/state/passwords.svelte";
+
+	let {
+		filteredPasswords,
+		changeSelectedPassword,
+	}: {
+		filteredPasswords: Password[];
+		changeSelectedPassword: (password: Password) => Promise<void>;
+	} = $props();
+</script>
+
+<div class="flex flex-col w-1/2 overflow-auto h-fit max-h-full rounded-l-lg">
+	{#each filteredPasswords as password, index}
+		<button
+			class="flex flex-col w-full gap-1.5 p-2 hover:bg-accent {passwords
+				.selectedPassword?.id === password.id
+				? 'bg-accent'
+				: ''} {index !== filteredPasswords.length - 1
+				? 'border-b'
+				: ''}"
+			onclick={async () => {
+				await changeSelectedPassword(password);
+			}}
+		>
+			<div class="flex flex-row w-full items-center gap-1.5">
+				<Avatar.Root>
+					<Avatar.Image
+						src={password.websites.length
+							? `https://icons.duckduckgo.com/ip3/${URL.parse(password.websites[0])?.hostname}.ico`
+							: ""}
+						alt="Icon"
+					/>
+					<Avatar.Fallback>
+						<Icon icon="lucide:globe-lock" font-size="24" />
+					</Avatar.Fallback>
+				</Avatar.Root>
+				<h2 class="text-lg w-full text-start truncate">
+					{password.title}
+				</h2>
+			</div>
+			{#if password.tags.length}
+				<div class="flex flex-row gap-1.5 w-full flex-wrap">
+					{#each password.tags as tag}
+						<Badge variant="secondary">
+							{tag}
+						</Badge>
+					{/each}
+				</div>
+			{/if}
+		</button>
+	{/each}
+</div>

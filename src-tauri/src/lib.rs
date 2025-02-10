@@ -10,8 +10,8 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             commands::hashing::argon2_hash,
-            commands::encryption::encrypt_password,
-            commands::encryption::decrypt_password,
+            commands::encryption::encrypt_string,
+            commands::encryption::decrypt_string,
             commands::offline_mode::save_offline_mode_keys,
             commands::offline_mode::get_offline_mode_keys
         ])

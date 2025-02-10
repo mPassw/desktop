@@ -1,4 +1,5 @@
 <script lang="ts">
+	import auth from "@/state/auth.svelte";
 	import osInfo from "@/state/osInfo.svelte";
 	import server from "@/state/server.svelte";
 	import { getVersion } from "@tauri-apps/api/app";
@@ -19,7 +20,9 @@
 		</div>
 		<div class="flex flex-col">
 			<h3 class="leading-none">Server Version</h3>
-			<p class="text-muted-foreground">{server.serverVersion}</p>
+			<p class="text-muted-foreground">
+				{auth.isOfflineMode ? "offline-mode" : server.serverVersion}
+			</p>
 		</div>
 		<div class="flex flex-col">
 			<h3 class="leading-none">Operating System Type</h3>

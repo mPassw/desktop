@@ -1,39 +1,35 @@
-use chacha::{ChaCha, KeyStream};
+use chacha20poly1305::{
+    aead::{Aead, AeadCore, KeyInit, OsRng},
+    XChaCha20Poly1305,
+};
 use tokio::task;
 
 use crate::utils;
 
 #[tauri::command]
-pub async fn encrypt_password(
+pub async fn encrypt_string(
     encryption_key: Vec<u8>,
     password: String,
 ) -> Result<std::collections::HashMap<String, String>, String> {
     task::spawn_blocking(move || {
         let salt = utils::generate_random_bytes(16)?;
-        let nonce = utils::generate_random_bytes(24)?;
+
         let key = utils::derive_encryption_key(encryption_key, salt.clone())?;
+        let key_array: [u8; 32] = key.try_into().map_err(|_| "Invalid key length")?;
+        let nonce = XChaCha20Poly1305::generate_nonce(OsRng);
 
-        let key_bytes: [u8; 32] = key.try_into().map_err(|_| "Invalid key length")?;
-        let nonce_bytes: [u8; 24] = nonce
-            .clone()
-            .try_into()
-            .map_err(|_| "Invalid nonce length")?;
+        let encrypted_bytes = password.as_bytes();
 
-        let mut stream = ChaCha::new_xchacha20(&key_bytes, &nonce_bytes);
+        let cipher = XChaCha20Poly1305::new(key_array.as_slice().into());
 
-        let mut password_bytes = password.as_bytes().to_vec();
-        println!("Password bytes before encryption: {:?}", password_bytes);
-
-        stream
-            .xor_read(&mut password_bytes)
-            .map_err(|e| format!("{:?}", e))?;
-
-        println!("Password bytes after encryption: {:?}", password_bytes);
+        let cipher_text = cipher
+            .encrypt(&nonce, encrypted_bytes)
+            .map_err(|e| e.to_string())?;
 
         let mut map = std::collections::HashMap::new();
-        map.insert("password".to_string(), hex::encode(password_bytes));
-        map.insert("salt".to_string(), hex::encode(salt));
-        map.insert("nonce".to_string(), hex::encode(nonce));
+        map.insert("encrypted".to_string(), hex::encode(cipher_text.clone()));
+        map.insert("salt".to_string(), hex::encode(salt.clone()));
+        map.insert("nonce".to_string(), hex::encode(nonce.clone()));
 
         Ok(map)
     })
@@ -42,31 +38,31 @@ pub async fn encrypt_password(
 }
 
 #[tauri::command]
-pub async fn decrypt_password(
+pub async fn decrypt_string(
     encryption_key: Vec<u8>,
-    password: String,
+    encrypted: String,
     salt: String,
     nonce: String,
 ) -> Result<String, String> {
     task::spawn_blocking(move || {
-        let enc_password = hex::decode(password).map_err(|e| e.to_string())?;
-        let salt_bytes = hex::decode(salt).map_err(|e| e.to_string())?;
-        let nonce_bytes = hex::decode(nonce).map_err(|e| e.to_string())?;
+        let encrypted = hex::decode(encrypted).map_err(|e| e.to_string())?;
+        let salt = hex::decode(salt).map_err(|e| e.to_string())?;
 
-        let key = utils::derive_encryption_key(encryption_key, salt_bytes)?;
+        let nonce = hex::decode(nonce).map_err(|e| e.to_string())?;
+        let nonce_array: [u8; 24] = nonce
+            .clone()
+            .try_into()
+            .map_err(|_| "Invalid nonce length")?;
 
-        let key_bytes: [u8; 32] = key.try_into().map_err(|_| "Invalid key length")?;
-        let nonce_final: [u8; 24] = nonce_bytes.try_into().map_err(|_| "Invalid nonce length")?;
+        let key = utils::derive_encryption_key(encryption_key, salt.clone())?;
+        let key_array: [u8; 32] = key.try_into().map_err(|_| "Invalid key length")?;
 
-        let mut stream = ChaCha::new_xchacha20(&key_bytes, &nonce_final);
-        let mut decrypted_bytes = enc_password.clone();
+        let cipher = XChaCha20Poly1305::new(key_array.as_slice().into());
+        let plaintext = cipher
+            .decrypt(nonce_array.as_slice().into(), encrypted.as_slice())
+            .map_err(|e| e.to_string())?;
 
-        stream
-            .xor_read(&mut decrypted_bytes)
-            .map_err(|e| format!("{:?}", e))?;
-
-        let decrypted = String::from_utf8(decrypted_bytes).map_err(|e| e.to_string())?;
-
+        let decrypted = String::from_utf8(plaintext.to_vec()).map_err(|e| e.to_string())?;
         Ok(decrypted)
     })
     .await

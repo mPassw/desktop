@@ -22,16 +22,19 @@
 			title: "Generator",
 			icon: "lucide:key-round",
 			path: "/dashboard/generator",
+			disabled: auth.isOfflineMode,
 		},
 		{
 			title: "Import/Export",
 			icon: "lucide:arrow-down-up",
 			path: "/dashboard/import-export",
+			disabled: auth.isOfflineMode,
 		},
 		{
 			title: "My Account",
 			icon: "lucide:user-round",
 			path: "/dashboard/my-account",
+			disabled: auth.isOfflineMode,
 		},
 	];
 </script>
@@ -49,7 +52,13 @@
 						? 'visible'
 						: 'invisible'}"
 				></div>
-				<Button href={item.path} variant="link" class="text-lg">
+				<Button
+					href={item.disabled ? "#" : item.path}
+					variant="link"
+					class="text-lg {item.disabled
+						? 'pointer-events-none text-muted-foreground'
+						: ''}"
+				>
 					<Icon icon={item.icon} font-size="24" />
 					<span>
 						{item.title}

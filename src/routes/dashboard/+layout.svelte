@@ -15,7 +15,7 @@
 </script>
 
 <div class="h-full px-2 w-full">
-	<div class="flex flex-row w-full h-full max-w-[1400px] mx-auto">
+	<div class="flex flex-row w-full h-full max-w-[1500px] mx-auto">
 		<Sidebar />
 		{@render children()}
 	</div>
