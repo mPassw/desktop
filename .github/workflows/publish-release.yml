@@ -34,6 +34,25 @@ jobs:
             - name: setup bun
               uses: oven-sh/setup-bun@v2
 
+            - name: Bump version (patch)
+              run: npm version patch
+
+            - name: Commit changes
+              run: |
+                  git config --local user.email "actions@github.com"
+                  git config --local user.name "GitHub Actions"
+                  git add package.json package-lock.json
+                  git commit -m "chore(release): bump version to $(npm pkg get version)"
+
+            - name: Tag commit
+              run: git tag v$(npm pkg get version | tr -d '"')
+
+            - name: Push changes and tags
+              uses: ad-m/github-push-action@master
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  tags: true
+
             - name: install Rust stable
               uses: dtolnay/rust-toolchain@stable
               with:
