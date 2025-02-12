@@ -34,9 +34,6 @@ jobs:
             - name: setup bun
               uses: oven-sh/setup-bun@v2
 
-            - name: Bump version (patch)
-              run: npm version patch
-
             - name: install Rust stable
               uses: dtolnay/rust-toolchain@stable
               with:
