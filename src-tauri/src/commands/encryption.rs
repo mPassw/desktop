@@ -9,7 +9,7 @@ use crate::utils;
 #[tauri::command]
 pub async fn encrypt_string(
     encryption_key: Vec<u8>,
-    password: String,
+    plaintext: String,
 ) -> Result<std::collections::HashMap<String, String>, String> {
     task::spawn_blocking(move || {
         let salt = utils::generate_random_bytes(16)?;
@@ -18,7 +18,7 @@ pub async fn encrypt_string(
         let key_array: [u8; 32] = key.try_into().map_err(|_| "Invalid key length")?;
         let nonce = XChaCha20Poly1305::generate_nonce(OsRng);
 
-        let encrypted_bytes = password.as_bytes();
+        let encrypted_bytes = plaintext.as_bytes();
 
         let cipher = XChaCha20Poly1305::new(key_array.as_slice().into());
 

@@ -5,7 +5,6 @@ import { fetch } from "@tauri-apps/plugin-http";
 import { getErrorMessage } from "@/utils";
 import { invoke } from "@tauri-apps/api/core";
 import { getOfflineModePasswords } from "@/offlineMode/offlineMode.svelte";
-import { toast } from "svelte-sonner";
 
 interface EncryptedField {
 	value: string;
@@ -37,7 +36,14 @@ class PasswordsState {
 	public selectedPassword: Password | null = $state(null);
 	public isEditing: boolean = $state(false); // should be disabled in offline mode
 
-	public getPasswords = async (): Promise<void> => {
+	/**
+	 * Get passwords from server or offline mode. Automatically selects first password
+	 *
+	 * @param selectPasswordInTrash If true, first password in trash will be selected
+	 */
+	public getPasswords = async (
+		selectPasswordInTrash: boolean = false
+	): Promise<void> => {
 		this.isEditing = false;
 		this.passwords = [];
 		this.selectedPassword = null;
@@ -60,25 +66,32 @@ class PasswordsState {
 		}
 
 		if (this.passwords.length) {
-			await this.setSelectedPassword(this.passwords[0]);
+			const passwordToSelect = this.passwords.find(
+				(p) => p.inTrash === selectPasswordInTrash
+			);
+			if (passwordToSelect) {
+				await this.setSelectedPassword(passwordToSelect);
+			}
 		} else {
 			this.selectedPassword = null;
 		}
 	};
 
 	/**
-	 * `password` parameter MUST be decrypted. This function will create a new password instance and encrypt the fields
+	 * `password` parameter MUST be decrypted. This function will create a new password instance and decrypt it
 	 */
 	public setSelectedPassword = async (password: Password) => {
 		if (this.selectedPassword?.id === password.id) return;
 
+		this.isEditing = false;
+		this.selectedPassword = null;
 		this.selectedPassword = {
 			...password,
 			username: { ...password.username },
 			password: { ...password.password },
 			note: { ...password.note },
-			websites: { ...password.websites },
-			tags: { ...password.tags },
+			websites: [...password.websites],
+			tags: [...password.tags],
 		};
 
 		this.selectedPassword = await this.decryptPassword(
@@ -86,46 +99,116 @@ class PasswordsState {
 		);
 	};
 
-	public encryptPassword = async () => {
-		try {
-			const encryptedData = await invoke<{
+	/**
+	 * Update selected password. !!! Only decrypted password should be passed to this function !!!
+	 */
+	public updatePassword = async (password: Password): Promise<void> => {
+		this.isEditing = false;
+        
+		password = await this.encryptPassword(password);
+
+		const res = await fetch(
+			server.serverUrl + `/passwords/${password.id}`,
+			{
+				method: "PATCH",
+				headers: {
+					Authorization: "Bearer " + auth.authToken,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					title: password.title,
+					username: password.username.value
+						? password.username
+						: null,
+					password: password.password.value
+						? password.password
+						: null,
+					note: password.note.value ? password.note : null,
+					websites: password.websites,
+					tags: password.tags,
+					inTrash: password.inTrash,
+				}),
+			}
+		);
+
+		if (!res.ok) {
+			throw new Error(getErrorMessage(await res.text()));
+		}
+
+		await this.getPasswords();
+	};
+
+	/**
+	 * Move password to trash. !!! Only decrypted password should be passed to this function !!!
+	 */
+	public movePasswordToTrash = async (password: Password): Promise<void> => {
+		if (password.inTrash) {
+			throw new Error("Password is already in trash");
+		}
+
+		password.inTrash = true;
+		await this.updatePassword(password);
+	};
+
+	/**
+	 * Remove password from trash (restore). !!! Only decrypted password should be passed to this function !!!
+	 */
+	public restorePassword = async (password: Password): Promise<void> => {
+		if (!password.inTrash) {
+			throw new Error("Password is not in trash");
+		}
+
+		password.inTrash = false;
+		await this.updatePassword(password);
+	};
+
+	public encryptPassword = async (password: Password): Promise<Password> => {
+		if (password.username.value) {
+			const { encrypted, salt, nonce } = await invoke<{
 				encrypted: string;
 				salt: string;
 				nonce: string;
 			}>("encrypt_string", {
-				encryptionKey: passwords.encryptionKey,
-				password: "oiblyat234!",
+				encryptionKey: this.encryptionKey,
+				plaintext: password.username.value,
 			});
 
-			console.log(encryptedData.encrypted.length);
-
-			const res = await fetch(server.serverUrl + "/passwords/add", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${auth.authToken}`,
-				},
-				body: JSON.stringify({
-					title: "Test",
-					password: {
-						value: encryptedData.encrypted,
-						salt: encryptedData.salt,
-						nonce: encryptedData.nonce,
-					},
-					websites: [],
-					note: null,
-					tags: [],
-				}),
-			});
-
-			if (res.status !== 201) {
-				console.error(await res.json());
-			}
-
-			await this.getPasswords();
-		} catch (err: any) {
-			toast.error(err);
+			password.username.value = encrypted;
+			password.username.salt = salt;
+			password.username.nonce = nonce;
 		}
+
+		if (password.password.value) {
+			const { encrypted, salt, nonce } = await invoke<{
+				encrypted: string;
+				salt: string;
+				nonce: string;
+			}>("encrypt_string", {
+				encryptionKey: this.encryptionKey,
+				plaintext: password.password.value,
+			});
+
+			password.password.value = encrypted;
+			password.password.salt = salt;
+			password.password.nonce = nonce;
+		}
+
+		if (password.note.value) {
+			const { encrypted, salt, nonce } = await invoke<{
+				encrypted: string;
+				salt: string;
+				nonce: string;
+			}>("encrypt_string", {
+				encryptionKey: this.encryptionKey,
+				plaintext: password.note.value,
+			});
+
+			password.note.value = encrypted;
+			password.note.salt = salt;
+			password.note.nonce = nonce;
+		}
+
+		return password;
 	};
 
 	public decryptPassword = async (password: Password): Promise<Password> => {
@@ -138,8 +221,6 @@ class PasswordsState {
 			});
 		}
 
-		console.log("Decrypted username: ", password.username.value);
-
 		if (password.password.value) {
 			password.password.value = await invoke<string>("decrypt_string", {
 				encryptionKey: this.encryptionKey,
@@ -149,8 +230,6 @@ class PasswordsState {
 			});
 		}
 
-		console.log("Decrypted password: ", password.password.value);
-
 		if (password.note.value) {
 			password.note.value = await invoke<string>("decrypt_string", {
 				encryptionKey: this.encryptionKey,
@@ -159,8 +238,6 @@ class PasswordsState {
 				nonce: password.note.nonce,
 			});
 		}
-
-		console.log("Decrypted note: ", password.note.value);
 
 		return password;
 	};

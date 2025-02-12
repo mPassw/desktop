@@ -11,6 +11,7 @@
 	import { Toaster } from "@/components/ui/sonner";
 	import { onMount } from "svelte";
 	import { arch, hostname, type, version } from "@tauri-apps/plugin-os";
+	import { getVersion } from "@tauri-apps/api/app";
 
 	let { children } = $props();
 
@@ -19,9 +20,14 @@
 		osInfo.version = version();
 		osInfo.arch = arch();
 		osInfo.hostname = (await hostname()) ?? "unknown";
+		osInfo.appVersion = await getVersion();
 
-		const decorations = await preferences.getWindowDecorations();
-		await preferences.setWindowDecorations(decorations ?? "system");
+		await preferences.setWindowDecorations(
+			(await preferences.getWindowDecorations()) ?? "system"
+		);
+		await preferences.setWindowsDecorationsSide(
+			(await preferences.getWindowsDecorationsSide()) ?? "right"
+		);
 
 		auth.sessionLength = await preferences.getSessionLength();
 	});
@@ -29,6 +35,14 @@
 
 <ModeWatcher />
 <Toaster richColors class="select-none" />
+
+{#if process.env.NODE_ENV === "development"}
+	<p
+		class="fixed bottom-1 right-1 text-center text-xs text-muted-foreground z-50 select-none"
+	>
+		Dev Build
+	</p>
+{/if}
 
 <Tooltip.Provider delayDuration={100}>
 	<div class="h-screen flex flex-col">

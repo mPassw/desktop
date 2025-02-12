@@ -4,7 +4,7 @@
 	import Icon from "@iconify/svelte";
 	import Search from "@/layout/passwords/search.svelte";
 	import PasswordsList from "./passwordsList.svelte";
-	import SelectedPassword from "./selectedPassword.svelte";
+	import SelectedPassword from "./selectedPassword/selectedPassword.svelte";
 
 	import { Blurfade } from "@/components/animations/blurfade";
 	import { onMount } from "svelte";
@@ -12,6 +12,7 @@
 	import { Separator } from "@/components/ui/separator";
 	import { saveOfflineModePasswords } from "@/offlineMode/offlineMode.svelte";
 	import { page } from "$app/state";
+	import { afterNavigate } from "$app/navigation";
 
 	/**
 	 * Since this component is used in two different pages, we need to check if the current page is the trash page
@@ -28,7 +29,7 @@
 	let filteredPasswords: Password[] = $derived(
 		passwords.passwords.filter((password) => {
 			return (
-				!password.inTrash &&
+				(isPageTrash ? password.inTrash : !password.inTrash) &&
 				(password.title
 					.toLowerCase()
 					.includes(searchValue.toLowerCase()) ||
@@ -48,7 +49,7 @@
 		try {
 			isLoading = true;
 
-			await passwords.getPasswords();
+			await passwords.getPasswords(isPageTrash);
 			await saveOfflineModePasswords(passwords.passwords);
 		} catch (err: any) {
 			toast.error(err.message);
@@ -58,9 +59,9 @@
 	};
 
 	const changeSelectedPassword = async (password: Password) => {
+		if (passwords.selectedPassword?.id === password.id) return;
 		try {
 			isDecrypting = true;
-
 			await passwords.setSelectedPassword(password);
 		} catch (err: any) {
 			console.error(err);
@@ -70,10 +71,27 @@
 		}
 	};
 
-	onMount(async () => {
+	afterNavigate(async () => {
 		try {
 			if (!passwords.passwords.length) {
 				await fetchPasswords();
+				return;
+			}
+
+			let passwordToSelect: Password | null = null;
+
+			if (isPageTrash) {
+				passwordToSelect =
+					passwords.passwords.find((password) => password.inTrash) ??
+					null;
+			} else {
+				passwordToSelect =
+					passwords.passwords.find((password) => !password.inTrash) ??
+					null;
+			}
+
+			if (passwordToSelect) {
+				await changeSelectedPassword(passwordToSelect);
 			}
 		} catch (err: any) {
 			toast.error(err.message);
@@ -85,6 +103,7 @@
 </script>
 
 <Blurfade
+	delay={0}
 	class="p-3 flex flex-col w-full h-full gap-1.5 relative overflow-x-hidden"
 >
 	{#if isLoading}

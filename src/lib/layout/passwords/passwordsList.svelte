@@ -18,7 +18,7 @@
 <div class="flex flex-col w-1/2 overflow-auto h-fit max-h-full rounded-l-lg">
 	{#each filteredPasswords as password, index}
 		<button
-			class="flex flex-col w-full gap-1.5 p-2 hover:bg-accent {passwords
+			class="flex flex-col w-full gap-1.5 p-2 hover:bg-accent duration-75 {passwords
 				.selectedPassword?.id === password.id
 				? 'bg-accent'
 				: ''} {index !== filteredPasswords.length - 1

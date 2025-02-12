@@ -14,6 +14,9 @@ class ServerState {
 		(this.automaticValidation =
 			(await preferences.getServerAutomaticValidation()) ?? false);
 
+	/**
+	 * Checks for the header `x-mpass-version` in the server response
+	 */
 	public validate = async () => {
 		if (!this.serverUrl.match(/^https?:\/\//)) {
 			this.serverUrl = "https://" + this.serverUrl;

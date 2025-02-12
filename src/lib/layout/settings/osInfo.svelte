@@ -2,26 +2,20 @@
 	import auth from "@/state/auth.svelte";
 	import osInfo from "@/state/osInfo.svelte";
 	import server from "@/state/server.svelte";
-	import { getVersion } from "@tauri-apps/api/app";
-	import { onMount } from "svelte";
-
-	let appVersion: string = $state("");
-
-	onMount(async () => {
-		appVersion = await getVersion();
-	});
 </script>
 
 <div class="flex flex-col w-full">
 	<div class="flex flex-col gap-1.5">
 		<div class="flex flex-col">
 			<h3 class="leading-none">App Version</h3>
-			<p class="text-muted-foreground">{appVersion}</p>
+			<p class="text-muted-foreground">{osInfo.appVersion}</p>
 		</div>
 		<div class="flex flex-col">
 			<h3 class="leading-none">Server Version</h3>
 			<p class="text-muted-foreground">
-				{auth.isOfflineMode ? "offline-mode" : server.serverVersion}
+				{auth.isOfflineMode
+					? "offline-mode"
+					: (server.serverVersion ?? undefined)}
 			</p>
 		</div>
 		<div class="flex flex-col">

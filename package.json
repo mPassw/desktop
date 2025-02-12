@@ -16,7 +16,7 @@
 		"@iconify/svelte": "^4.2.0",
 		"@tauri-apps/api": "^2",
 		"@tauri-apps/plugin-http": "^2.3.0",
-		"@tauri-apps/plugin-opener": "^2",
+		"@tauri-apps/plugin-opener": "^2.2.5",
 		"@tauri-apps/plugin-os": "^2.2.0",
 		"@tauri-apps/plugin-store": "^2.2.0",
 		"@types/bun": "^1.2.2",
@@ -24,7 +24,8 @@
 		"buffer": "^6.0.3",
 		"svelte-inview": "^4.0.4",
 		"svelte-motion": "^0.12.2",
-		"tssrp6a": "^3.0.0"
+		"tssrp6a": "^3.0.0",
+		"uuid": "^11.0.5"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-static": "^3.0.6",
@@ -32,7 +33,7 @@
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
 		"@tauri-apps/cli": "^2",
 		"autoprefixer": "^10.4.20",
-		"bits-ui": "^1.0.0-next.90",
+		"bits-ui": "^1.0.0-next.95",
 		"clsx": "^2.1.1",
 		"lucide-svelte": "^0.474.0",
 		"mode-watcher": "^0.5.1",

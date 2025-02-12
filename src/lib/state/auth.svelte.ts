@@ -14,7 +14,6 @@ class AuthState {
 	public sessionLength: "5m" | "10m" | "30m" | "1h" | "2h" = $state("30m");
 
 	public authToken: string = $state("");
-	public timeOutId: Timer | null = $state(null);
 
 	public isAdmin: boolean = $state(false);
 	public isVerified: boolean = $state(false);
@@ -25,7 +24,12 @@ class AuthState {
 	public createdAt: string = $state("");
 	public updatedAt: string = $state("");
 
-	public isOfflineMode: boolean = $derived(this.loginState === "offline" || this.loginState === 'offline-login');
+	/**
+	 * This is just a helper to check if the user is in offline mode
+	 */
+	public isOfflineMode: boolean = $derived(
+		this.loginState === "offline" || this.loginState === "offline-login"
+	);
 
 	public setLogoutTimer = () => {
 		const expiration = getJWTExpiration(this.authToken);
@@ -34,32 +38,16 @@ class AuthState {
 		const now = Date.now();
 		const timeLeft = expiration * 1000 - now;
 
-		this.timeOutId = setTimeout(async () => {
+		setTimeout(async () => {
 			await this.logOut();
 			toast.warning("Session expired");
 		}, timeLeft);
 	};
 
 	public logOut = async () => {
-		// if (this.timeOutId) {
-		// 	clearTimeout(this.timeOutId);
-		// }
-
-		// this.authToken = "";
-		// this.isAdmin = false;
-		// this.isVerified = false;
-
-		// this.email = "";
-		// this.username = "";
-
-		// this.createdAt = "";
-		// this.updatedAt = "";
-
-		// passwords.encryptionKey = new Uint8Array(0);
-		// passwords.passwords = [];
-
-		// reloading page SHOULD clear memory
 		await goto("/");
+
+		// page reload SHOULD clean the memory
 		window.location.reload();
 	};
 }

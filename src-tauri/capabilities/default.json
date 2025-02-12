@@ -1,30 +1,38 @@
 {
-	"$schema": "../gen/schemas/desktop-schema.json",
-	"identifier": "default",
-	"description": "Capability for the main window",
-	"windows": ["main"],
-	"permissions": [
-		"core:default",
-		"core:window:allow-set-decorations",
-		"core:window:allow-start-dragging",
-		"core:window:allow-close",
-		"core:window:allow-minimize",
-		"core:window:allow-toggle-maximize",
-		"core:window:allow-internal-toggle-maximize",
-		"opener:default",
-		"store:default",
-		"os:default",
-		"os:allow-arch",
-		"os:allow-hostname",
-		"os:allow-version",
-		"os:allow-os-type",
-		{
-			"identifier": "http:default",
-			"allow": [
-				{ "url": "http://*" },
-				{ "url": "https://*" },
-				{ "url": "http://localhost:*" }
-			]
-		}
-	]
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capability for the main window",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "core:window:allow-set-decorations",
+    "core:window:allow-start-dragging",
+    "core:window:allow-close",
+    "core:window:allow-minimize",
+    "core:window:allow-toggle-maximize",
+    "core:window:allow-internal-toggle-maximize",
+    "store:default",
+    "os:default",
+    "os:allow-arch",
+    "os:allow-hostname",
+    "os:allow-version",
+    "os:allow-os-type",
+    {
+      "identifier": "http:default",
+      "allow": [
+        {
+          "url": "http://*"
+        },
+        {
+          "url": "https://*"
+        },
+        {
+          "url": "http://localhost:*"
+        }
+      ]
+    },
+    "opener:default"
+  ]
 }

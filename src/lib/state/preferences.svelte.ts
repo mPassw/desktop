@@ -6,6 +6,7 @@ import type { Password } from "./passwords.svelte";
 
 class Preferences {
 	public windowDecorations: "off" | "system" | "custom" = $state("system");
+	public windowDecorationsSide: "left" | "right" = $state("right"); // only used when windowDecorations is set to custom
 
 	private _loadPreferences = async (): Promise<Store> =>
 		await load("preferences.json", { autoSave: false });
@@ -23,14 +24,23 @@ class Preferences {
 	public setServerUrl = async (value: string): Promise<void> =>
 		await this._setValue("serverUrl", value);
 
+	/**
+	 * Get saved server url
+	 */
 	public getServerUrl = async (): Promise<string | undefined> =>
 		(await (await this._loadPreferences()).get("serverUrl")) as string;
 
+	/**
+	 * Set the server automatic validation, so that the user doesn't have to do it every time
+	 */
 	public setServerAutomaticValidation = async (
 		value: boolean
 	): Promise<void> =>
 		await this._setValue("serverAutomaticValidation", value);
 
+	/**
+	 * Get saved server automatic validation
+	 */
 	public getServerAutomaticValidation = async (): Promise<
 		boolean | undefined
 	> =>
@@ -44,9 +54,15 @@ class Preferences {
 	public setUserEmail = async (value: string): Promise<void> =>
 		await this._setValue("userEmail", value);
 
+	/**
+	 * Get saved user email
+	 */
 	public getUserEmail = async (): Promise<string | undefined> =>
 		(await (await this._loadPreferences()).get("userEmail")) as string;
 
+	/**
+	 * Set window decorations. Default is system
+	 */
 	public setWindowDecorations = async (
 		value: "off" | "system" | "custom"
 	): Promise<void> => {
@@ -58,6 +74,11 @@ class Preferences {
 		await this._setValue("windowDecorations", value);
 	};
 
+	/**
+	 * Get saved window decorations.
+	 * This should be rewritten in rust, or we should use plugin `window state` https://v2.tauri.app/plugin/window-state/
+	 * because we are loading it in +layout.svelte, which is delayed
+	 */
 	public getWindowDecorations = async (): Promise<
 		"off" | "system" | "custom" | undefined
 	> =>
@@ -66,6 +87,29 @@ class Preferences {
 			| "system"
 			| "custom";
 
+	/**
+	 * Set window decorations side. Only applies to `custom` type. Default is right
+	 */
+	public setWindowsDecorationsSide = async (
+		side: "left" | "right"
+	): Promise<void> => {
+		await this._setValue("windowsDecorationsSide", side);
+		this.windowDecorationsSide = side;
+	};
+
+	/**
+	 * Get saved window decorations side. It shouldn't return `undefined`, but it's here just in case
+	 */
+	public getWindowsDecorationsSide = async (): Promise<
+		"left" | "right" | undefined
+	> =>
+		(await (
+			await this._loadPreferences()
+		).get("windowsDecorationsSide")) as "left" | "right" | undefined;
+
+	/**
+	 * Set session length. Default is 30m. Only applies after the next login
+	 */
 	public setSessionLength = async (
 		value: "5m" | "10m" | "30m" | "1h" | "2h"
 	): Promise<void> => {
@@ -73,6 +117,9 @@ class Preferences {
 		auth.sessionLength = value;
 	};
 
+	/**
+	 * Get saved session length
+	 */
 	public getSessionLength = async (): Promise<
 		"5m" | "10m" | "30m" | "1h" | "2h"
 	> =>
