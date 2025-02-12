@@ -104,7 +104,7 @@ class PasswordsState {
 	 */
 	public updatePassword = async (password: Password): Promise<void> => {
 		this.isEditing = false;
-        
+
 		password = await this.encryptPassword(password);
 
 		const res = await fetch(
@@ -160,6 +160,27 @@ class PasswordsState {
 
 		password.inTrash = false;
 		await this.updatePassword(password);
+	};
+
+	/**
+	 * Permanently delete password
+	 */
+	public deletePassword = async (password: Password): Promise<void> => {
+		const res = await fetch(
+			server.serverUrl + `/passwords/${password.id}`,
+			{
+				method: "DELETE",
+				headers: {
+					Authorization: "Bearer " + auth.authToken,
+				},
+			}
+		);
+
+		if (!res.ok) {
+			throw new Error(getErrorMessage(await res.text()));
+		}
+
+		await this.getPasswords(true);
 	};
 
 	public encryptPassword = async (password: Password): Promise<Password> => {

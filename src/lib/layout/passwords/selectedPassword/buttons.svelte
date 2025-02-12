@@ -1,9 +1,10 @@
 <script lang="ts">
+	import * as AlertDialog from "$lib/components/ui/alert-dialog";
 	import auth from "@/state/auth.svelte";
 	import passwords from "@/state/passwords.svelte";
 	import Icon from "@iconify/svelte";
 
-	import { Button } from "@/components/ui/button";
+	import { Button, buttonVariants } from "@/components/ui/button";
 	import { toast } from "svelte-sonner";
 
 	let {
@@ -23,6 +24,8 @@
 			}
 
 			await passwords.updatePassword(passwords.selectedPassword);
+
+			toast.success("Password updated");
 		} catch (err: any) {
 			console.error(err);
 			toast.error(err.message);
@@ -39,9 +42,9 @@
 				throw new Error("No password selected");
 			}
 
-			console.log(passwords.selectedPassword);
-
 			await passwords.movePasswordToTrash(passwords.selectedPassword);
+
+			toast.success("Password moved to trash");
 		} catch (err: any) {
 			console.error(err);
 			toast.error(err.message);
@@ -58,9 +61,28 @@
 				throw new Error("No password selected");
 			}
 
-			console.log(passwords.selectedPassword);
-
 			await passwords.restorePassword(passwords.selectedPassword);
+
+			toast.success("Password restored");
+		} catch (err: any) {
+			console.error(err);
+			toast.error(err.message);
+		} finally {
+			isLoading = false;
+		}
+	};
+
+	const permanentlyDelete = async (): Promise<void> => {
+		try {
+			isLoading = true;
+
+			if (!passwords.selectedPassword) {
+				throw new Error("No password selected");
+			}
+
+			await passwords.deletePassword(passwords.selectedPassword);
+
+			toast.success("Password permanently deleted");
 		} catch (err: any) {
 			console.error(err);
 			toast.error(err.message);
@@ -78,9 +100,35 @@
 			disabled={auth.isOfflineMode || isLoading}
 			onclick={restore}
 		>
-			<Icon icon="lucide:trash-2" font-size="20" />
+			<Icon icon="lucide:archive-restore" font-size="20" />
 			Restore
 		</Button>
+		<AlertDialog.Root>
+			<AlertDialog.Trigger
+				disabled={auth.isOfflineMode || isLoading}
+				class={buttonVariants({ variant: "destructive", size: "sm" })}
+			>
+				<Icon icon="lucide:trash-2" font-size="20" />
+				Delete
+			</AlertDialog.Trigger>
+			<AlertDialog.Content>
+				<AlertDialog.Header>
+					<AlertDialog.Title>
+						Are you absolutely sure?
+					</AlertDialog.Title>
+					<AlertDialog.Description>
+						This action cannot be undone. This will permanently
+						delete this password from the server
+					</AlertDialog.Description>
+				</AlertDialog.Header>
+				<AlertDialog.Footer>
+					<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+					<AlertDialog.Action onclick={permanentlyDelete}>
+						Continue
+					</AlertDialog.Action>
+				</AlertDialog.Footer>
+			</AlertDialog.Content>
+		</AlertDialog.Root>
 	{:else if passwords.isEditing}
 		<Button
 			variant="secondary"
