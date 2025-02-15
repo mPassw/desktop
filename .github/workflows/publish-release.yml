@@ -1,9 +1,10 @@
 name: "publish"
 
 on:
-    push:
-        branches:
-            - main
+    workflow_dispatch:
+    # push:
+    #     branches:
+    #         - main
 
 jobs:
     publish-tauri:
@@ -61,9 +62,51 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
-                  tagName: app-v__VERSION__
-                  releaseName: "App v__VERSION__"
-                  releaseBody: "See the assets to download this version and install."
+                  tagName: v__VERSION__
+                  releaseName: "v__VERSION__"
                   releaseDraft: true
                   prerelease: false
                   args: ${{ matrix.args }}
+
+            - name: Generate Checksums for Release Assets (Ubuntu)
+              if: matrix.platform == 'ubuntu-22.04'
+              run: |
+                  # Get version from package.json
+                  VERSION=$(node -p "require('./package.json').version")
+                  RELEASE_TAG="v$VERSION"
+                  echo "Fetching assets for release $RELEASE_TAG"
+                  echo "Checksum list for release assets:" > checksums.txt
+                  # Get asset URLs from the release (note: requires GitHub CLI)
+                  ASSET_URLS=$(gh release view $RELEASE_TAG --json assets -q '.assets[].url')
+                  for url in $ASSET_URLS; do
+                      FILE_NAME=$(basename "$url")
+                      curl -L -o "$FILE_NAME" "$url"
+                      CHECKSUM=$(sha256sum "$FILE_NAME" | awk '{print $1}')
+                      echo "$FILE_NAME: $CHECKSUM" >> checksums.txt
+                  done
+                  # Update the draft release with the checksums file
+                  gh release edit $RELEASE_TAG --notes-file checksums.txt
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Generate Checksums for Release Assets (Windows)
+              if: matrix.platform == 'windows-latest'
+              shell: pwsh
+              run: |
+                  # Get version from package.json
+                  $version = (Get-Content package.json | ConvertFrom-Json).version
+                  $releaseTag = "v$version"
+                  Write-Output "Fetching assets for release $releaseTag"
+                  "Checksum list for release assets:" | Out-File -FilePath checksums.txt
+                  # Get asset URLs from the release (requires GitHub CLI)
+                  $assetUrls = gh release view $releaseTag --json assets -q '.assets[].url'
+                  foreach ($url in $assetUrls) {
+                      $fileName = Split-Path $url -Leaf
+                      Invoke-WebRequest -Uri $url -OutFile $fileName
+                      $checksum = (Get-FileHash $fileName -Algorithm SHA256).Hash
+                      "$fileName: $checksum" | Out-File -Append -FilePath checksums.txt
+                  }
+                  # Update the draft release with the checksums file
+                  gh release edit $releaseTag --notes-file checksums.txt
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
