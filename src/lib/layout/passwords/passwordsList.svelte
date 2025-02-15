@@ -5,6 +5,7 @@
 
 	import { Badge } from "@/components/ui/badge";
 	import type { Password } from "@/state/passwords.svelte";
+	import { getDomainFromUrl } from "@/utils";
 
 	let {
 		filteredPasswords,
@@ -32,7 +33,7 @@
 				<Avatar.Root>
 					<Avatar.Image
 						src={password.websites.length
-							? `https://icons.duckduckgo.com/ip3/${URL.parse(password.websites[0])?.hostname}.ico`
+							? `https://icons.duckduckgo.com/ip3/${getDomainFromUrl(password.websites[0])}.ico`
 							: ""}
 						alt="Icon"
 					/>
