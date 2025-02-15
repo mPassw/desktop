@@ -2,12 +2,57 @@ name: "publish"
 
 on:
     workflow_dispatch:
-    # push:
-    #     branches:
-    #         - main
+        inputs:
+            version_bump:
+                description: "Version bump type"
+                required: true
+                type: choice
+                options:
+                    - patch
+                    - minor
+                    - major
+                default: "patch"
 
 jobs:
-    publish-tauri:
+    bump-version:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: setup node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: lts/*
+
+            - name: Configure Git
+              run: |
+                  git config --global user.email "github-actions[bot]@users.noreply.github.com"
+                  git config --global user.name "github-actions[bot]"
+
+            - name: Bump version
+              run: npm version ${{ inputs.version_bump }} --no-git-tag-version
+
+            - name: Commit version bump
+              run: |
+                  git add package.json
+                  git commit -m "chore: bump version to $(npm pkg get version | tr -d '\"')"
+
+            - name: Tag commit
+              run: git tag v$(npm pkg get version | tr -d '"')
+
+            - name: Push changes and tags
+              uses: ad-m/github-push-action@master
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  tags: true
+                  branch: ${{ github.ref }}
+
+    build:
+        needs: bump-version
         permissions:
             contents: write
         strategy:
@@ -26,6 +71,8 @@ jobs:
         runs-on: ${{ matrix.platform }}
         steps:
             - uses: actions/checkout@v4
+              with:
+                  ref: ${{ github.ref }}
 
             - name: setup node
               uses: actions/setup-node@v4
@@ -34,15 +81,6 @@ jobs:
 
             - name: setup bun
               uses: oven-sh/setup-bun@v2
-
-            - name: Tag commit
-              run: git tag v$(npm pkg get version | tr -d '"')
-
-            - name: Push changes and tags
-              uses: ad-m/github-push-action@master
-              with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-                  tags: true
 
             - name: install Rust stable
               uses: dtolnay/rust-toolchain@stable
