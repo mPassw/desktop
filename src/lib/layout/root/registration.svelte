@@ -1,9 +1,11 @@
 <script lang="ts">
+	import * as Dialog from "$lib/components/ui/dialog";
+
 	import auth from "@/state/auth.svelte";
 	import preferences from "@/state/preferences.svelte";
 
 	import { Blurfade } from "@/components/animations/blurfade";
-	import { Button } from "@/components/ui/button";
+	import { Button, buttonVariants } from "@/components/ui/button";
 	import { Label } from "@/components/ui/label";
 	import { Input } from "@/components/ui/input";
 	import { createUser } from "@/auth/createUser.svelte";
@@ -11,6 +13,7 @@
 	import { slide } from "svelte/transition";
 
 	let isLoading: boolean = $state(false);
+	let isRegistrationDialogOpen: boolean = $state(false);
 	let isPasswordInputFocused: boolean = $state(false);
 	let isRepeatPasswordInputFocused: boolean = $state(false);
 
@@ -77,6 +80,7 @@
 			auth.loginState = "login";
 
 			toast.success("Account created successfully");
+			isRegistrationDialogOpen = false;
 		} catch (err: any) {
 			toast.error(err.message ?? "Unknown error");
 		} finally {
@@ -100,8 +104,14 @@
 
 <svelte:document
 	onkeydown={async (e) => {
-		if (e.key === "Enter" && auth.loginState === "registration") {
-			await register();
+		if (isLoading) return;
+
+		if (
+			e.key === "Enter" &&
+			auth.loginState === "registration" &&
+			!isRegistrationDialogOpen
+		) {
+			isRegistrationDialogOpen = true;
 		}
 	}}
 />
@@ -206,13 +216,35 @@
 			</div>
 		{/if}
 	</div>
-	<Button
-		disabled={isLoading}
-		class="w-[300px] mt-1.5 font-semibold"
-		onclick={register}
-	>
-		Register
-	</Button>
+	<Dialog.Root bind:open={isRegistrationDialogOpen}>
+		<Dialog.Trigger
+			class="w-[300px] mt-1.5 font-semibold {buttonVariants({
+				variant: 'default',
+			})}"
+			onclick={() => (isRegistrationDialogOpen = true)}
+		>
+			Register
+		</Dialog.Trigger>
+		<Dialog.Content>
+			<Dialog.Header>
+				<Dialog.Title>Please read carefully</Dialog.Title>
+				<Dialog.Description>
+					Your password CANNOT be changed after registration. Please
+					make sure to remember it and keep it in a safe place. If you
+					lose your password, you will permanently lose access to your
+					account.
+				</Dialog.Description>
+			</Dialog.Header>
+			<div class="flex justify-end gap-2">
+				<Dialog.Close class={buttonVariants({ variant: "outline" })}>
+					Cancel
+				</Dialog.Close>
+				<Button onclick={register} disabled={isLoading}>
+					I understand, continue
+				</Button>
+			</div>
+		</Dialog.Content>
+	</Dialog.Root>
 	<div class="flex flex-row justify-between w-full max-w-[300px]">
 		<Button
 			onclick={() => (auth.loginState = "server-validation")}
@@ -222,7 +254,6 @@
 		>
 			Change server URL
 		</Button>
-
 		<Button
 			onclick={() => (auth.loginState = "login")}
 			disabled={isLoading}

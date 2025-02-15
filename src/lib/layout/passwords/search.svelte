@@ -2,6 +2,7 @@
 	import auth from "@/state/auth.svelte";
 	import passwords from "@/state/passwords.svelte";
 	import Icon from "@iconify/svelte";
+	import NewPasswordDialog from "./newPasswordDialog.svelte";
 
 	import { Button } from "@/components/ui/button";
 	import { Input } from "@/components/ui/input";
@@ -26,15 +27,9 @@
 		placeholder="Search by Title, Website or Tag"
 	/>
 	<div class="flex flex-row gap-1.5">
-		<Button
-			onclick={async () => await passwords.encryptPassword()}
-			disabled={isLoading || auth.isOfflineMode}
-			variant="outline"
-			size="icon"
-			class={isPageTrash ? "hidden" : ""}
-		>
-			<Icon icon="lucide:plus" font-size="20" />
-		</Button>
+		{#if !isPageTrash}
+			<NewPasswordDialog />
+		{/if}
 		<Button
 			onclick={fetchPasswords}
 			disabled={isLoading}

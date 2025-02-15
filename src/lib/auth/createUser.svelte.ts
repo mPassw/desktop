@@ -16,7 +16,7 @@ export const createUser = async (
 		16
 	);
 
-	const res = await fetch(server.serverUrl + "/users/new", {
+	const res = await fetch(server.serverUrl + "/users", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",

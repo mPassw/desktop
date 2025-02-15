@@ -36,12 +36,6 @@
 			authId = step1Response.authId;
 			email = step1Response.email;
 
-			const saltBytes = new Uint8Array(
-				step1Response.salt
-					.match(/.{1,2}/g)
-					?.map((byte) => parseInt(byte, 16)) ?? []
-			);
-
 			const srpClient = new SRPClientSession(
 				new SRPRoutines(new SRPParameters())
 			);

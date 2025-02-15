@@ -40,7 +40,7 @@
 	<p
 		class="fixed bottom-1 right-1 text-center text-xs text-muted-foreground z-50 select-none"
 	>
-		Dev Build
+		Debug
 	</p>
 {/if}
 

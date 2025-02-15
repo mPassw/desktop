@@ -132,7 +132,7 @@ class PasswordsState {
 		);
 
 		if (!res.ok) {
-			throw new Error(getErrorMessage(await res.text()));
+			throw new Error(getErrorMessage(await res.json()));
 		}
 
 		await this.getPasswords();
@@ -177,10 +177,39 @@ class PasswordsState {
 		);
 
 		if (!res.ok) {
-			throw new Error(getErrorMessage(await res.text()));
+			throw new Error(getErrorMessage(await res.json()));
 		}
 
 		await this.getPasswords(true);
+	};
+
+	public addNewPassword = async (password: Password): Promise<void> => {
+		const res = await fetch(server.serverUrl + "/passwords", {
+			method: "POST",
+			headers: {
+				Authorization: "Bearer " + auth.authToken,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				title: password.title,
+				inTrash: false,
+				username: password.username.value.length
+					? password.username
+					: null,
+				password: password.password.value.length
+					? password.password
+					: null,
+				note: password.note.value.length ? password.note : null,
+				websites: password.websites,
+				tags: password.tags,
+			}),
+		});
+
+		if (!res.ok) {
+			throw new Error(getErrorMessage(await res.json()));
+		}
+
+		await this.getPasswords();
 	};
 
 	public encryptPassword = async (password: Password): Promise<Password> => {
