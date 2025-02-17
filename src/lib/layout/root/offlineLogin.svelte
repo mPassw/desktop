@@ -1,6 +1,7 @@
 <script lang="ts">
 	import passwords from "@/state/passwords.svelte";
 	import auth from "@/state/auth.svelte";
+	import loadersState from "@/state/loaders.svelte";
 
 	import { Blurfade } from "@/components/animations/blurfade";
 	import { Button } from "@/components/ui/button";
@@ -11,15 +12,15 @@
 	import { calculateEncryptionKey } from "@/auth/login.svelte";
 	import { goto } from "$app/navigation";
 
-	let isLoading: boolean = $state(false);
 	let password: string = $state("");
 
 	const login = async () => {
 		try {
-			isLoading = true;
+			loadersState.isFullscreenLoaderVisible = true;
 
 			const { encryptionKey, salt } = await getOfflineModeData();
-			password = await calculateEncryptionKey(password, salt);
+			await calculateEncryptionKey(password, salt);
+			password = "";
 
 			if (
 				encryptionKey.toString() !== passwords.encryptionKey.toString()
@@ -37,7 +38,7 @@
 					"Invalid password or no offline data available. Please try online mode first."
 			);
 		} finally {
-			isLoading = false;
+			loadersState.isFullscreenLoaderVisible = false;
 		}
 	};
 </script>
@@ -57,7 +58,6 @@
 			<Label for="password">Password</Label>
 			<Input
 				bind:value={password}
-				disabled={isLoading}
 				type="password"
 				id="password"
 				placeholder="********"
@@ -69,18 +69,11 @@
 	>
 		<Button
 			onclick={() => (auth.loginState = "server-validation")}
-			disabled={isLoading}
 			variant="secondary"
 			class="w-1/2"
 		>
 			Online Mode
 		</Button>
-		<Button
-			onclick={login}
-			disabled={isLoading}
-			class="w-1/2 font-semibold"
-		>
-			Login
-		</Button>
+		<Button onclick={login} class="w-1/2 font-semibold">Login</Button>
 	</div>
 </Blurfade>

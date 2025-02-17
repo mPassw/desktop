@@ -2,9 +2,8 @@ import auth from "@/state/auth.svelte";
 import passwords from "@/state/passwords.svelte";
 import server from "@/state/server.svelte";
 
-import { getErrorMessage } from "@/utils";
+import { getErrorMessage, makeRequest } from "@/utils";
 import { invoke } from "@tauri-apps/api/core";
-import { fetch } from "@tauri-apps/plugin-http";
 
 interface Step1Response {
 	authId: string;
@@ -20,19 +19,11 @@ interface Step2Response {
 }
 
 export const step1 = async (identifier: string): Promise<Step1Response> => {
-	const res = await fetch(server.serverUrl + "/auth/step1", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
+	const res = await makeRequest("/auth/step1", "POST", {
 		body: JSON.stringify({
-			identifier: identifier,
+			identifier,
 		}),
 	});
-
-	if (!res.ok) {
-		throw new Error(getErrorMessage(await res.json()));
-	}
 
 	const jsonData = (await res.json()) as Step1Response;
 
@@ -46,11 +37,7 @@ export const step2 = async (
 	A: string,
 	M1: string
 ): Promise<Step2Response> => {
-	const res = await fetch(server.serverUrl + `/auth/step2`, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
+	const res = await makeRequest("/auth/step2", "POST", {
 		body: JSON.stringify({
 			authId,
 			A,
@@ -59,10 +46,6 @@ export const step2 = async (
 		}),
 	});
 
-	if (!res.ok) {
-		throw new Error(getErrorMessage(await res.json()));
-	}
-
 	const jsonData = (await res.json()) as Step2Response;
 
 	auth.authToken = jsonData.token;
@@ -70,9 +53,6 @@ export const step2 = async (
 	return jsonData;
 };
 
-/**
- * Calculate encryption key. Returns an empty string to clear password from memory
- */
 export const calculateEncryptionKey = async (
 	password: string,
 	salt: string
@@ -81,6 +61,4 @@ export const calculateEncryptionKey = async (
 		password: password,
 		salt: salt,
 	});
-
-	return "";
 };

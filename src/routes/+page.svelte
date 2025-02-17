@@ -1,4 +1,5 @@
 <script lang="ts">
+	import OfflineLogin from "@/layout/root/offlineLogin.svelte";
 	import Login from "@/layout/root/login.svelte";
 	import Registration from "@/layout/root/registration.svelte";
 	import ServerValidation from "@/layout/root/serverValidation.svelte";
@@ -10,7 +11,6 @@
 	import { Button } from "@/components/ui/button";
 	import { toggleMode } from "mode-watcher";
 	import { onMount } from "svelte";
-	import OfflineLogin from "@/layout/root/offlineLogin.svelte";
 
 	const loadPreferences = async () => {
 		auth.email = (await preferences.getUserEmail()) ?? "";

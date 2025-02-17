@@ -1,8 +1,6 @@
 import auth from "@/state/auth.svelte";
-import server from "@/state/server.svelte";
 
-import { getErrorMessage } from "@/utils";
-import { fetch } from "@tauri-apps/plugin-http";
+import { makeRequest } from "@/utils";
 
 interface GetMeResponse {
 	id: number;
@@ -15,16 +13,9 @@ interface GetMeResponse {
 }
 
 export const getMe = async (): Promise<void> => {
-	const res = await fetch(server.serverUrl + "/users/@me", {
-		method: "GET",
-		headers: {
-			Authorization: `Bearer ${auth.authToken}`,
-		},
+	const res = await makeRequest("/users/@me", "GET", {
+		authorization: true,
 	});
-
-	if (!res.ok) {
-		throw new Error(getErrorMessage(await res.json()));
-	}
 
 	const jsonData: GetMeResponse = await res.json();
 

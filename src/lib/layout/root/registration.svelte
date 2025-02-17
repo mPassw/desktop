@@ -3,6 +3,7 @@
 
 	import auth from "@/state/auth.svelte";
 	import preferences from "@/state/preferences.svelte";
+	import loadersState from "@/state/loaders.svelte";
 
 	import { Blurfade } from "@/components/animations/blurfade";
 	import { Button, buttonVariants } from "@/components/ui/button";
@@ -12,7 +13,6 @@
 	import { toast } from "svelte-sonner";
 	import { slide } from "svelte/transition";
 
-	let isLoading: boolean = $state(false);
 	let isRegistrationDialogOpen: boolean = $state(false);
 	let isPasswordInputFocused: boolean = $state(false);
 	let isRepeatPasswordInputFocused: boolean = $state(false);
@@ -53,7 +53,8 @@
 
 	const register = async () => {
 		try {
-			isLoading = true;
+			loadersState.isFullscreenLoaderVisible = true;
+			isRegistrationDialogOpen = false;
 
 			if (!regEmail) {
 				throw new Error("Email is required");
@@ -80,11 +81,10 @@
 			auth.loginState = "login";
 
 			toast.success("Account created successfully");
-			isRegistrationDialogOpen = false;
 		} catch (err: any) {
 			toast.error(err.message ?? "Unknown error");
 		} finally {
-			isLoading = false;
+			loadersState.isFullscreenLoaderVisible = false;
 		}
 	};
 
@@ -104,7 +104,7 @@
 
 <svelte:document
 	onkeydown={async (e) => {
-		if (isLoading) return;
+		if (loadersState.isFullscreenLoaderVisible) return;
 
 		if (
 			e.key === "Enter" &&
@@ -123,7 +123,6 @@
 			<Label for="email">Email<span class="text-red-600">*</span></Label>
 			<Input
 				bind:value={regEmail}
-				disabled={isLoading}
 				type="email"
 				id="email"
 				placeholder="mail@example.com"
@@ -133,7 +132,6 @@
 			<Label for="username">Username</Label>
 			<Input
 				bind:value={regUsername}
-				disabled={isLoading}
 				type="text"
 				id="username"
 				placeholder="coolname69420"
@@ -148,7 +146,6 @@
 				bind:value={regPassword}
 				onfocusin={() => (isPasswordInputFocused = true)}
 				onfocusout={() => (isPasswordInputFocused = false)}
-				disabled={isLoading}
 				type="password"
 				id="password"
 				placeholder="********"
@@ -193,7 +190,6 @@
 				bind:value={regPasswordConfirm}
 				onfocusin={() => (isRepeatPasswordInputFocused = true)}
 				onfocusout={() => (isRepeatPasswordInputFocused = false)}
-				disabled={isLoading}
 				type="password"
 				id="password-repeat"
 				placeholder="********"
@@ -239,16 +235,13 @@
 				<Dialog.Close class={buttonVariants({ variant: "outline" })}>
 					Cancel
 				</Dialog.Close>
-				<Button onclick={register} disabled={isLoading}>
-					I understand, continue
-				</Button>
+				<Button onclick={register}>I understand, continue</Button>
 			</div>
 		</Dialog.Content>
 	</Dialog.Root>
 	<div class="flex flex-row justify-between w-full max-w-[300px]">
 		<Button
 			onclick={() => (auth.loginState = "server-validation")}
-			disabled={isLoading}
 			variant="link"
 			class="text-muted-foreground"
 		>
@@ -256,7 +249,6 @@
 		</Button>
 		<Button
 			onclick={() => (auth.loginState = "login")}
-			disabled={isLoading}
 			variant="link"
 			class="text-muted-foreground"
 		>

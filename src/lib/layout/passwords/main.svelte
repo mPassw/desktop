@@ -7,12 +7,13 @@
 	import SelectedPassword from "./selectedPassword/selectedPassword.svelte";
 
 	import { Blurfade } from "@/components/animations/blurfade";
-	import { onMount } from "svelte";
 	import { toast } from "svelte-sonner";
 	import { Separator } from "@/components/ui/separator";
 	import { saveOfflineModePasswords } from "@/offlineMode/offlineMode.svelte";
 	import { page } from "$app/state";
 	import { afterNavigate } from "$app/navigation";
+	import { Loader } from "@/components/animations/loaders";
+	import loadersState from "@/state/loaders.svelte";
 
 	/**
 	 * Since this component is used in two different pages, we need to check if the current page is the trash page
@@ -21,8 +22,6 @@
 	let isPageTrash: boolean = $derived(
 		page.url.pathname === "/dashboard/trash"
 	);
-
-	let isLoading: boolean = $state(true);
 	let isDecrypting: boolean = $state(true);
 	let searchValue: string = $state("");
 
@@ -47,14 +46,14 @@
 
 	const fetchPasswords = async () => {
 		try {
-			isLoading = true;
+			loadersState.isPasswordsLoaderVisible = true;
 
 			await passwords.getPasswords(isPageTrash);
 			await saveOfflineModePasswords(passwords.passwords);
 		} catch (err: any) {
 			toast.error(err.message);
 		} finally {
-			isLoading = false;
+			loadersState.isPasswordsLoaderVisible = false;
 		}
 	};
 
@@ -64,7 +63,6 @@
 			isDecrypting = true;
 			await passwords.setSelectedPassword(password);
 		} catch (err: any) {
-			console.error(err);
 			toast.error(err.message ?? "Unknown error");
 		} finally {
 			isDecrypting = false;
@@ -97,7 +95,7 @@
 			toast.error(err.message);
 		} finally {
 			isDecrypting = false;
-			isLoading = false;
+			loadersState.isPasswordsLoaderVisible = false;
 		}
 	});
 </script>
@@ -106,17 +104,13 @@
 	delay={0}
 	class="p-3 flex flex-col w-full h-full gap-1.5 relative overflow-x-hidden"
 >
-	{#if isLoading}
-		<Icon
-			icon="svg-spinners:3-dots-move"
-			font-size="64"
-			class="self-center justify-self-center h-full"
-		/>
+	{#if loadersState.isPasswordsLoaderVisible}
+		<Loader />
 	{:else}
 		{#if !auth.isOfflineMode && !auth.isVerified}
 			<p>Email not verified mate</p>
 		{/if}
-		<Search {isLoading} bind:searchValue {isPageTrash} {fetchPasswords} />
+		<Search bind:searchValue {isPageTrash} {fetchPasswords} />
 		{#if !filteredPasswords.length}
 			<div class="flex gap-1 w-full justify-center h-full items-center">
 				<Icon icon="lucide:info" font-size="24" />
@@ -126,7 +120,7 @@
 			<div class="flex flex-row w-full h-full mt-12 overflow-auto">
 				<PasswordsList {filteredPasswords} {changeSelectedPassword} />
 				<Separator orientation="vertical" />
-				<SelectedPassword bind:isDecrypting {isLoading} {isPageTrash} />
+				<SelectedPassword bind:isDecrypting {isPageTrash} />
 			</div>
 		{/if}
 	{/if}

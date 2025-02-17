@@ -2,6 +2,7 @@
 	import passwords from "@/state/passwords.svelte";
 	import preferences from "@/state/preferences.svelte";
 	import auth from "@/state/auth.svelte";
+	import loadersState from "@/state/loaders.svelte";
 
 	import { Blurfade } from "@/components/animations/blurfade";
 	import { Button } from "@/components/ui/button";
@@ -13,8 +14,7 @@
 	import { goto } from "$app/navigation";
 	import { getMe } from "@/auth/getMe.svelte";
 	import { saveOfflineModeData } from "@/offlineMode/offlineMode.svelte";
-
-	let isLoading: boolean = $state(false);
+	import { hexToBigInt } from "@/utils";
 
 	let authId: string | undefined = $state(undefined);
 	let email: string = $state(auth.email);
@@ -22,7 +22,7 @@
 
 	const login = async () => {
 		try {
-			isLoading = true;
+			loadersState.isFullscreenLoaderVisible = true;
 
 			if (!email) {
 				throw new Error("Email/Username is required");
@@ -42,8 +42,8 @@
 
 			const srpClientStep1 = await srpClient.step1(email, password);
 			const srpClientStep2 = await srpClientStep1.step2(
-				BigInt("0x" + step1Response.salt),
-				BigInt("0x" + step1Response.B)
+				hexToBigInt(step1Response.salt),
+				hexToBigInt(step1Response.B)
 			);
 
 			const step2Response = await step2(
@@ -52,12 +52,10 @@
 				srpClientStep2.M1.toString(16)
 			);
 
-			await srpClientStep2.step3(BigInt("0x" + step2Response.M2));
+			await srpClientStep2.step3(hexToBigInt(step2Response.M2));
 
-			password = await calculateEncryptionKey(
-				password,
-				step1Response.salt
-			);
+			await calculateEncryptionKey(password, step1Response.salt);
+			password = "";
 
 			auth.setLogoutTimer();
 
@@ -67,12 +65,14 @@
 
 			auth.loginState = "logged-in";
 			await goto("/dashboard/passwords");
+
+			console.log(auth.authToken);
 		} catch (err: any) {
 			toast.error(err.message ?? "Unknown error");
 			passwords.encryptionKey = new Uint8Array(0);
 		} finally {
 			authId = undefined;
-			isLoading = false;
+			loadersState.isFullscreenLoaderVisible = false;
 		}
 	};
 </script>
@@ -88,38 +88,29 @@
 <Blurfade delay={0} class="flex flex-col items-center w-full gap-1.5">
 	<h3 class="text-2xl font-semibold">Login</h3>
 	<div class="flex flex-col items-center gap-2">
-		<div class="flex w-[300px] flex-col gap-1.5">
+		<div class="flex w-80 flex-col gap-1.5">
 			<Label for="email">Email/Username</Label>
 			<Input
 				bind:value={email}
-				disabled={isLoading}
 				type="email"
 				id="email"
 				placeholder="mail@example.com"
 			/>
 		</div>
-		<div class="flex w-[300px] flex-col gap-1.5">
+		<div class="flex w-80 flex-col gap-1.5">
 			<Label for="password">Password</Label>
 			<Input
 				bind:value={password}
-				disabled={isLoading}
 				type="password"
 				id="password"
 				placeholder="********"
 			/>
 		</div>
 	</div>
-	<Button
-		disabled={isLoading}
-		onclick={login}
-		class="w-[300px] mt-1.5 font-semibold"
-	>
-		Login
-	</Button>
-	<div class="flex flex-row justify-between w-full max-w-[300px]">
+	<Button onclick={login} class="w-80 mt-1.5 font-semibold">Login</Button>
+	<div class="flex flex-row justify-between w-full max-w-80">
 		<Button
 			onclick={() => (auth.loginState = "server-validation")}
-			disabled={isLoading}
 			variant="link"
 			class="text-muted-foreground"
 		>
@@ -128,7 +119,6 @@
 
 		<Button
 			onclick={() => (auth.loginState = "registration")}
-			disabled={isLoading}
 			variant="link"
 			class="text-muted-foreground"
 		>

@@ -1,8 +1,7 @@
 import server from "./server.svelte";
 import auth from "./auth.svelte";
 
-import { fetch } from "@tauri-apps/plugin-http";
-import { getErrorMessage } from "@/utils";
+import { getErrorMessage, makeRequest } from "@/utils";
 import { invoke } from "@tauri-apps/api/core";
 import { getOfflineModePasswords } from "@/offlineMode/offlineMode.svelte";
 
@@ -51,16 +50,9 @@ class PasswordsState {
 		if (auth.isOfflineMode) {
 			this.passwords = await getOfflineModePasswords();
 		} else {
-			const res = await fetch(server.serverUrl + "/passwords", {
-				method: "GET",
-				headers: {
-					Authorization: "Bearer " + auth.authToken,
-				},
+			const res = await makeRequest("/passwords", "GET", {
+				authorization: true,
 			});
-
-			if (!res.ok) {
-				throw new Error(getErrorMessage(await res.json()));
-			}
 
 			this.passwords = await res.json();
 		}
@@ -107,33 +99,18 @@ class PasswordsState {
 
 		password = await this.encryptPassword(password);
 
-		const res = await fetch(
-			server.serverUrl + `/passwords/${password.id}`,
-			{
-				method: "PATCH",
-				headers: {
-					Authorization: "Bearer " + auth.authToken,
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					title: password.title,
-					username: password.username.value
-						? password.username
-						: null,
-					password: password.password.value
-						? password.password
-						: null,
-					note: password.note.value ? password.note : null,
-					websites: password.websites,
-					tags: password.tags,
-					inTrash: password.inTrash,
-				}),
-			}
-		);
-
-		if (!res.ok) {
-			throw new Error(getErrorMessage(await res.json()));
-		}
+		await makeRequest(`/passwords/${password.id}`, "PATCH", {
+			authorization: true,
+			body: JSON.stringify({
+				title: password.title,
+				username: password.username.value ? password.username : null,
+				password: password.password.value ? password.password : null,
+				note: password.note.value ? password.note : null,
+				websites: password.websites,
+				tags: password.tags,
+				inTrash: password.inTrash,
+			}),
+		});
 
 		await this.getPasswords();
 	};
@@ -166,30 +143,16 @@ class PasswordsState {
 	 * Permanently delete password
 	 */
 	public deletePassword = async (password: Password): Promise<void> => {
-		const res = await fetch(
-			server.serverUrl + `/passwords/${password.id}`,
-			{
-				method: "DELETE",
-				headers: {
-					Authorization: "Bearer " + auth.authToken,
-				},
-			}
-		);
-
-		if (!res.ok) {
-			throw new Error(getErrorMessage(await res.json()));
-		}
+		await makeRequest(`/passwords/${password.id}`, "DELETE", {
+			authorization: true,
+		});
 
 		await this.getPasswords(true);
 	};
 
 	public addNewPassword = async (password: Password): Promise<void> => {
-		const res = await fetch(server.serverUrl + "/passwords", {
-			method: "POST",
-			headers: {
-				Authorization: "Bearer " + auth.authToken,
-				"Content-Type": "application/json",
-			},
+		await makeRequest("/passwords", "POST", {
+			authorization: true,
 			body: JSON.stringify({
 				title: password.title,
 				inTrash: false,
@@ -204,10 +167,6 @@ class PasswordsState {
 				tags: password.tags,
 			}),
 		});
-
-		if (!res.ok) {
-			throw new Error(getErrorMessage(await res.json()));
-		}
 
 		await this.getPasswords();
 	};

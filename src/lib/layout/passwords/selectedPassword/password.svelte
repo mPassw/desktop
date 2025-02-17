@@ -1,10 +1,10 @@
 <script lang="ts">
 	import auth from "@/state/auth.svelte";
 	import passwords from "@/state/passwords.svelte";
-	import Icon from "@iconify/svelte";
 
 	import { Button } from "@/components/ui/button";
 	import { Input } from "@/components/ui/input";
+	import { Copy, Eye, EyeOff } from "lucide-svelte";
 
 	let {
 		isPasswordRevealed = $bindable(),
@@ -29,11 +29,13 @@
 				variant="outline"
 				size="icon"
 				onclick={() => (isPasswordRevealed = !isPasswordRevealed)}
+				disabled={!passwords.selectedPassword!.password.value}
 			>
-				<Icon
-					icon={isPasswordRevealed ? "lucide:eye-off" : "lucide:eye"}
-					font-size="20"
-				/>
+				{#if isPasswordRevealed}
+					<EyeOff size={20} />
+				{:else}
+					<Eye size={20} />
+				{/if}
 			</Button>
 			<Button
 				variant="outline"
@@ -43,7 +45,7 @@
 					await copyText(passwords.selectedPassword!.password!.value);
 				}}
 			>
-				<Icon icon="lucide:copy" font-size="20" />
+				<Copy size={20} />
 			</Button>
 		</div>
 	</div>

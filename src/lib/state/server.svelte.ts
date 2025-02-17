@@ -1,6 +1,6 @@
 import preferences from "./preferences.svelte";
 import authState from "./auth.svelte";
-import { fetch } from "@tauri-apps/plugin-http";
+import { makeRequest } from "@/utils";
 
 class ServerState {
 	public serverUrl: string = $state("");
@@ -26,7 +26,7 @@ class ServerState {
 			this.serverUrl = this.serverUrl.slice(0, -1);
 		}
 
-		const res = await fetch(this.serverUrl);
+		const res = await makeRequest("/", "GET");
 
 		if (!res.ok) {
 			throw new Error("Invalid server URL");

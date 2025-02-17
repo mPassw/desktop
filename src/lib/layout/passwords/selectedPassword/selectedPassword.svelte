@@ -15,21 +15,21 @@
 
 	let {
 		isDecrypting = $bindable(),
-		isLoading,
 		isPageTrash,
 	}: {
 		isDecrypting: boolean;
-		isLoading: boolean;
 		isPageTrash: boolean;
 	} = $props();
 
 	let isPasswordRevealed: boolean = $state(false);
 	let newWebsite: string = $state("");
 	let newTag: string = $state("");
-
 	const openUrl = async (url: string) => {
 		try {
-			await open(url);
+			const urlWithProtocol = url.match(/^https?:\/\//)
+				? url
+				: `https://${url}`;
+			await open(urlWithProtocol);
 		} catch (err: any) {
 			console.error(err);
 			toast.error(err);
@@ -59,7 +59,7 @@
 		</div>
 	{:else}
 		<Blurfade delay={0} class="flex flex-col gap-1.5">
-			<Buttons {isLoading} {isPageTrash} />
+			<Buttons {isPageTrash} />
 			<Title {copyText} />
 			<Username {copyText} />
 			<Password bind:isPasswordRevealed {copyText} />

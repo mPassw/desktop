@@ -1,11 +1,12 @@
 <script lang="ts">
-	import Icon from "@iconify/svelte";
 	import passwordGenerator from "@/state/passwordGenerator.svelte";
 
 	import type { HistoryItem } from "@/state/passwordGenerator.svelte";
 	import { Blurfade } from "@/components/animations/blurfade";
 	import { Button } from "@/components/ui/button";
 	import { toast } from "svelte-sonner";
+	import { Loader } from "@/components/animations/loaders";
+	import { Copy } from "lucide-svelte";
 
 	let {
 		history,
@@ -43,16 +44,9 @@
 			class="flex flex-col w-full border border-input rounded-lg h-16 justify-center p-2 hover:bg-accent duration-75 relative"
 		>
 			{#if item.encrypted}
-				<Icon
-					icon="svg-spinners:3-dots-move"
-					font-size="28"
-					class="self-center"
-				/>
+				<Loader width={48} height={48} />
 			{:else}
-				<Icon
-					icon="lucide:copy"
-					class="absolute right-2 top-2 opacity-50"
-				/>
+				<Copy size={20} class="absolute right-2 top-2 opacity-50" />
 				<p class="truncate w-full text-start pr-4">{item.value}</p>
 				<p class="text-muted-foreground text-sm text-start">
 					{item.type}

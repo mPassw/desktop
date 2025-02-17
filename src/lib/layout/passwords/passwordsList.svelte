@@ -6,6 +6,7 @@
 	import { Badge } from "@/components/ui/badge";
 	import type { Password } from "@/state/passwords.svelte";
 	import { getDomainFromUrl } from "@/utils";
+	import { GlobeLock } from "lucide-svelte";
 
 	let {
 		filteredPasswords,
@@ -32,13 +33,14 @@
 			<div class="flex flex-row w-full items-center gap-1.5">
 				<Avatar.Root>
 					<Avatar.Image
+						class="bg-muted-foreground"
 						src={password.websites.length
 							? `https://icons.duckduckgo.com/ip3/${getDomainFromUrl(password.websites[0])}.ico`
 							: ""}
 						alt="Icon"
 					/>
 					<Avatar.Fallback>
-						<Icon icon="lucide:globe-lock" font-size="24" />
+						<GlobeLock size={24} />
 					</Avatar.Fallback>
 				</Avatar.Root>
 				<h2 class="text-lg w-full text-start truncate">

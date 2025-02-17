@@ -3,21 +3,20 @@
 	import auth from "@/state/auth.svelte";
 	import passwords from "@/state/passwords.svelte";
 	import Icon from "@iconify/svelte";
+	import loadersState from "@/state/loaders.svelte";
 
 	import { Button, buttonVariants } from "@/components/ui/button";
 	import { toast } from "svelte-sonner";
 
 	let {
-		isLoading,
 		isPageTrash,
 	}: {
-		isLoading: boolean;
 		isPageTrash: boolean;
 	} = $props();
 
 	const updatePassword = async (): Promise<void> => {
 		try {
-			isLoading = true;
+			loadersState.isPasswordsLoaderVisible = true;
 
 			if (!passwords.selectedPassword) {
 				throw new Error("No password selected");
@@ -30,13 +29,13 @@
 			console.error(err);
 			toast.error(err.message);
 		} finally {
-			isLoading = false;
+			loadersState.isPasswordsLoaderVisible = false;
 		}
 	};
 
 	const moveToTrash = async (): Promise<void> => {
 		try {
-			isLoading = true;
+			loadersState.isPasswordsLoaderVisible = true;
 
 			if (!passwords.selectedPassword) {
 				throw new Error("No password selected");
@@ -49,13 +48,13 @@
 			console.error(err);
 			toast.error(err.message);
 		} finally {
-			isLoading = false;
+			loadersState.isPasswordsLoaderVisible = false;
 		}
 	};
 
 	const restore = async (): Promise<void> => {
 		try {
-			isLoading = true;
+			loadersState.isPasswordsLoaderVisible = true;
 
 			if (!passwords.selectedPassword) {
 				throw new Error("No password selected");
@@ -68,13 +67,13 @@
 			console.error(err);
 			toast.error(err.message);
 		} finally {
-			isLoading = false;
+			loadersState.isPasswordsLoaderVisible = false;
 		}
 	};
 
 	const permanentlyDelete = async (): Promise<void> => {
 		try {
-			isLoading = true;
+			loadersState.isPasswordsLoaderVisible = true;
 
 			if (!passwords.selectedPassword) {
 				throw new Error("No password selected");
@@ -87,7 +86,7 @@
 			console.error(err);
 			toast.error(err.message);
 		} finally {
-			isLoading = false;
+			loadersState.isPasswordsLoaderVisible = false;
 		}
 	};
 </script>
@@ -97,7 +96,8 @@
 		<Button
 			variant="secondary"
 			size="sm"
-			disabled={auth.isOfflineMode || isLoading}
+			disabled={auth.isOfflineMode ||
+				loadersState.isPasswordsLoaderVisible}
 			onclick={restore}
 		>
 			<Icon icon="lucide:archive-restore" font-size="20" />
@@ -105,7 +105,8 @@
 		</Button>
 		<AlertDialog.Root>
 			<AlertDialog.Trigger
-				disabled={auth.isOfflineMode || isLoading}
+				disabled={auth.isOfflineMode ||
+					loadersState.isPasswordsLoaderVisible}
 				class={buttonVariants({ variant: "destructive", size: "sm" })}
 			>
 				<Icon icon="lucide:trash-2" font-size="20" />
@@ -133,7 +134,8 @@
 		<Button
 			variant="secondary"
 			size="sm"
-			disabled={auth.isOfflineMode || isLoading}
+			disabled={auth.isOfflineMode ||
+				loadersState.isPasswordsLoaderVisible}
 			onclick={() => {
 				passwords.isEditing = false;
 			}}
@@ -144,7 +146,8 @@
 		<Button
 			variant="default"
 			size="sm"
-			disabled={auth.isOfflineMode || isLoading}
+			disabled={auth.isOfflineMode ||
+				loadersState.isPasswordsLoaderVisible}
 			onclick={updatePassword}
 		>
 			<Icon icon="lucide:save" font-size="20" />
@@ -154,7 +157,8 @@
 		<Button
 			variant="secondary"
 			size="sm"
-			disabled={auth.isOfflineMode || isLoading}
+			disabled={auth.isOfflineMode ||
+				loadersState.isPasswordsLoaderVisible}
 			onclick={() => {
 				passwords.isEditing = true;
 			}}
@@ -168,7 +172,8 @@
 		<Button
 			variant="destructive"
 			size="sm"
-			disabled={auth.isOfflineMode || isLoading}
+			disabled={auth.isOfflineMode ||
+				loadersState.isPasswordsLoaderVisible}
 			onclick={moveToTrash}
 		>
 			<Icon icon="lucide:trash-2" font-size="20" />

@@ -1,19 +1,16 @@
 <script lang="ts">
-	import auth from "@/state/auth.svelte";
-	import passwords from "@/state/passwords.svelte";
 	import Icon from "@iconify/svelte";
 	import NewPasswordDialog from "./newPasswordDialog.svelte";
+	import loadersState from "@/state/loaders.svelte";
 
 	import { Button } from "@/components/ui/button";
 	import { Input } from "@/components/ui/input";
 
 	let {
-		isLoading,
 		searchValue = $bindable(),
 		isPageTrash,
 		fetchPasswords,
 	}: {
-		isLoading: boolean;
 		searchValue: string;
 		isPageTrash: boolean;
 		fetchPasswords: () => Promise<void>;
@@ -23,7 +20,7 @@
 <div class="flex flex-row items-center gap-1.5 w-full absolute top-3 pr-6">
 	<Input
 		bind:value={searchValue}
-		disabled={isLoading}
+		disabled={loadersState.isPasswordsLoaderVisible}
 		placeholder="Search by Title, Website or Tag"
 	/>
 	<div class="flex flex-row gap-1.5">
@@ -32,7 +29,7 @@
 		{/if}
 		<Button
 			onclick={fetchPasswords}
-			disabled={isLoading}
+			disabled={loadersState.isPasswordsLoaderVisible}
 			variant="outline"
 			size="icon"
 		>

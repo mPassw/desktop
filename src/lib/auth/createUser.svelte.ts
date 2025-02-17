@@ -1,6 +1,6 @@
 import server from "@/state/server.svelte";
 
-import { getErrorMessage } from "@/utils";
+import { getErrorMessage, makeRequest } from "@/utils";
 import { fetch } from "@tauri-apps/plugin-http";
 import { createVerifierAndSalt, SRPParameters, SRPRoutines } from "tssrp6a";
 
@@ -16,11 +16,7 @@ export const createUser = async (
 		16
 	);
 
-	const res = await fetch(server.serverUrl + "/users", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
+	const res = await makeRequest("/users", "POST", {
 		body: JSON.stringify({
 			email: email,
 			username: username,

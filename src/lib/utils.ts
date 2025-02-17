@@ -1,6 +1,10 @@
+import server from "./state/server.svelte";
+import auth from "./state/auth.svelte";
+
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { Buffer } from "buffer";
+import { fetch } from "@tauri-apps/plugin-http";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -15,7 +19,49 @@ export const getErrorMessage = (error: any): string => {
 		if (Array.isArray(error.message)) return error.message[0];
 		if (typeof error.message === "string") return error.message;
 	}
-	return "An unknown error occurred";
+	return "Unknown error";
+};
+
+export const makeRequest = async (
+	path: string,
+	method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
+	{
+		authorization = true,
+		body = undefined,
+	}: { authorization?: boolean; body?: string } = {
+		authorization: true,
+		body: undefined,
+	}
+): Promise<Response> => {
+	try {
+		if (!server.serverUrl.length) throw new Error("Server URL is not set");
+
+		const res = await fetch(server.serverUrl + path, {
+			method,
+			headers: {
+				"Content-Type": "application/json",
+				authorization: authorization ? `Bearer ${auth.authToken}` : "",
+			},
+			body,
+		});
+
+		if (!res.ok) {
+			const errorData = await res.json();
+			throw new Error(getErrorMessage(errorData));
+		}
+
+		return res;
+	} catch (err: any) {
+		if (
+			err instanceof TypeError &&
+			err.message.includes("Failed to fetch")
+		) {
+			throw new Error(
+				"Cannot connect to server. Please check your connection."
+			);
+		}
+		throw new Error(err.message);
+	}
 };
 
 /**
@@ -82,3 +128,5 @@ export const getJWTExpiration = (token: string): number | null => {
 		return null;
 	}
 };
+
+export const hexToBigInt = (hex: string): bigint => BigInt("0x" + hex);

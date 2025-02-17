@@ -5,13 +5,14 @@
 	import newPassword from "@/state/newPassword.svelte";
 	import passwordGenerator from "@/state/passwordGenerator.svelte";
 	import auth from "@/state/auth.svelte";
+	import passwords from "@/state/passwords.svelte";
 
 	import { Button, buttonVariants } from "@/components/ui/button";
 	import { Input } from "@/components/ui/input";
 	import { Textarea } from "@/components/ui/textarea";
 	import { Plus, RefreshCcw, Eye, EyeOff, Trash, Save } from "lucide-svelte";
 	import { toast } from "svelte-sonner";
-	import passwords from "@/state/passwords.svelte";
+	import loadersState from "@/state/loaders.svelte";
 
 	let isDialogOpen: boolean = $state(false);
 	let isLoading: boolean = $state(false);
@@ -68,7 +69,8 @@
 
 	const addPassword = async () => {
 		try {
-			isLoading = true;
+			loadersState.isFullscreenLoaderVisible = true;
+			isDialogOpen = false;
 
 			if (!newPassword.title.length) {
 				if (newPassword.websites.length > 0) {
@@ -91,11 +93,10 @@
 			);
 
 			newPassword.reset();
-			isDialogOpen = false;
 		} catch (err: any) {
 			toast.error(err.message ?? "Failed to add password");
 		} finally {
-			isLoading = false;
+			loadersState.isFullscreenLoaderVisible = false;
 		}
 	};
 </script>
@@ -103,6 +104,7 @@
 <Dialog.Root bind:open={isDialogOpen}>
 	<Dialog.Trigger
 		class={buttonVariants({ variant: "outline", size: "icon" })}
+		disabled={auth.isOfflineMode}
 	>
 		<Plus />
 	</Dialog.Trigger>
