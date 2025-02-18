@@ -1,32 +1,10 @@
-import server from "./server.svelte";
 import auth from "./auth.svelte";
+import preferences from "./preferences.svelte";
 
 import { getErrorMessage, makeRequest } from "@/utils";
 import { invoke } from "@tauri-apps/api/core";
 import { getOfflineModePasswords } from "@/offlineMode/offlineMode.svelte";
-
-interface EncryptedField {
-	value: string;
-	salt: string;
-	nonce: string;
-}
-
-export interface Password {
-	id: number;
-
-	inTrash: boolean;
-	title: string;
-
-	username: EncryptedField;
-	password: EncryptedField;
-	note: EncryptedField;
-
-	websites: string[];
-	tags: string[];
-
-	createdAt: string;
-	updatedAt: string;
-}
+import type { Password } from "@/types";
 
 class PasswordsState {
 	public encryptionKey: Uint8Array = $state(new Uint8Array(0));
@@ -67,6 +45,8 @@ class PasswordsState {
 		} else {
 			this.selectedPassword = null;
 		}
+
+		await preferences.saveOfflineModePasswords(this.passwords);
 	};
 
 	/**

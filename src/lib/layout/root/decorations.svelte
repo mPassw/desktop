@@ -1,9 +1,9 @@
 <script lang="ts">
-	import Icon from "@iconify/svelte";
+	import preferences from "@/state/preferences.svelte";
 
 	import { Button } from "@/components/ui/button";
 	import { getCurrentWindow } from "@tauri-apps/api/window";
-	import preferences from "@/state/preferences.svelte";
+	import { Minus, Square, X } from "lucide-svelte";
 </script>
 
 <header class="w-full h-10 sticky bg-background top-0 left-0 z-50">
@@ -15,14 +15,14 @@
 					class="w-8 h-8"
 					onclick={async () => await getCurrentWindow().close()}
 				>
-					<Icon icon="lucide:x" font-size="22" />
+					<X size={22} />
 				</Button>
 				<Button
 					variant="ghost"
 					class="w-8 h-8"
 					onclick={async () => await getCurrentWindow().minimize()}
 				>
-					<Icon icon="lucide:minus" font-size="22" />
+					<Minus size={22} />
 				</Button>
 				<Button
 					variant="ghost"
@@ -30,7 +30,7 @@
 					onclick={async () =>
 						await getCurrentWindow().toggleMaximize()}
 				>
-					<Icon icon="lucide:square" font-size="16" />
+					<Square size={16} />
 				</Button>
 			</div>
 		{/if}
@@ -54,7 +54,7 @@
 					class="w-8 h-8"
 					onclick={async () => await getCurrentWindow().minimize()}
 				>
-					<Icon icon="lucide:minus" font-size="22" />
+					<Minus size={22} />
 				</Button>
 				<Button
 					variant="ghost"
@@ -62,14 +62,14 @@
 					onclick={async () =>
 						await getCurrentWindow().toggleMaximize()}
 				>
-					<Icon icon="lucide:square" font-size="16" />
+					<Square size={16} />
 				</Button>
 				<Button
 					variant="ghost"
 					class="w-8 h-8"
 					onclick={async () => await getCurrentWindow().close()}
 				>
-					<Icon icon="lucide:x" font-size="22" />
+					<X size={22} />
 				</Button>
 			</div>
 		{/if}

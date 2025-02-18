@@ -59,13 +59,5 @@
 		>
 			{@render children()}
 		</div>
-		<button
-			onclick={() => {
-				loadersState.isFullscreenLoaderVisible = true;
-				setTimeout(() => {
-					loadersState.isFullscreenLoaderVisible = false;
-				}, 2000);
-			}}>asd</button
-		>
 	</main>
 </Tooltip.Provider>

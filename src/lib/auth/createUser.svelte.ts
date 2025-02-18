@@ -1,7 +1,4 @@
-import server from "@/state/server.svelte";
-
 import { getErrorMessage, makeRequest } from "@/utils";
-import { fetch } from "@tauri-apps/plugin-http";
 import { createVerifierAndSalt, SRPParameters, SRPRoutines } from "tssrp6a";
 
 export const createUser = async (

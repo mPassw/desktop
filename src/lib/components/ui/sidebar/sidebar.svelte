@@ -1,38 +1,47 @@
 <script lang="ts">
-	import Icon from "@iconify/svelte";
 	import authState from "@/state/auth.svelte";
 	import auth from "@/state/auth.svelte";
 
 	import { Button } from "../button";
 	import { page } from "$app/state";
 	import { Blurfade } from "@/components/animations/blurfade";
+	import {
+		ArrowDownUp,
+		KeyRound,
+		LogOut,
+		RectangleEllipsis,
+		Settings2,
+		Trash2,
+		User,
+		Wrench,
+	} from "lucide-svelte";
 
 	const navigation = [
 		{
 			title: "Passwords",
-			icon: "material-symbols:password",
+			icon: RectangleEllipsis,
 			path: "/dashboard/passwords",
 		},
 		{
 			title: "Trash",
-			icon: "lucide:trash-2",
+			icon: Trash2,
 			path: "/dashboard/trash",
 		},
 		{
 			title: "Generator",
-			icon: "lucide:key-round",
+			icon: KeyRound,
 			path: "/dashboard/generator",
 			disabled: auth.isOfflineMode,
 		},
 		{
 			title: "Import/Export",
-			icon: "lucide:arrow-down-up",
+			icon: ArrowDownUp,
 			path: "/dashboard/import-export",
 			disabled: auth.isOfflineMode,
 		},
 		{
 			title: "My Account",
-			icon: "lucide:user-round",
+			icon: User,
 			path: "/dashboard/my-account",
 			disabled: auth.isOfflineMode,
 		},
@@ -59,7 +68,7 @@
 						? 'pointer-events-none text-muted-foreground'
 						: ''}"
 				>
-					<Icon icon={item.icon} font-size="24" />
+					<item.icon font-size="24" />
 					<span>
 						{item.title}
 					</span>
@@ -78,7 +87,7 @@
 						: 'invisible'}"
 				></div>
 				<Button href="/dashboard/admin" variant="link" class="text-lg">
-					<Icon icon="lucide:wrench" font-size="24" />
+					<Wrench size={24} />
 					<span>Admin</span>
 				</Button>
 			</div>
@@ -92,7 +101,7 @@
 					: 'invisible'}"
 			></div>
 			<Button href="/dashboard/settings" variant="link" class="text-lg">
-				<Icon icon="lucide:settings-2" font-size="24" />
+				<Settings2 size={24} />
 				<span>Settings</span>
 			</Button>
 		</div>
@@ -103,7 +112,7 @@
 				variant="link"
 				class="text-lg"
 			>
-				<Icon icon="lucide:log-out" font-size="24" />
+				<LogOut size={24} />
 				<span>Log Out</span>
 			</Button>
 		</div>

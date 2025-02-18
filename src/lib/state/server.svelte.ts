@@ -1,5 +1,6 @@
 import preferences from "./preferences.svelte";
 import authState from "./auth.svelte";
+
 import { makeRequest } from "@/utils";
 
 class ServerState {

@@ -53,11 +53,7 @@
 </script>
 
 <div class="w-1/2 flex flex-col gap-1.5 overflow-auto h-full p-2">
-	{#if isDecrypting}
-		<div class="flex w-full items-center justify-center h-screen">
-			<Icon icon="svg-spinners:3-dots-move" font-size="48" />
-		</div>
-	{:else}
+	{#if !isDecrypting}
 		<Blurfade delay={0} class="flex flex-col gap-1.5">
 			<Buttons {isPageTrash} />
 			<Title {copyText} />

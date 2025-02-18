@@ -18,6 +18,7 @@ class AuthState {
 	public isAdmin: boolean = $state(false);
 	public isVerified: boolean = $state(false);
 
+	public id: number = $state(0);
 	public email: string = $state("");
 	public username: string = $state("");
 

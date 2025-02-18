@@ -1,7 +1,12 @@
 <script lang="ts">
+	import Apple from "@/assets/icons/apple.svelte";
+	import Linux from "@/assets/icons/linux.svelte";
+	import Windows from "@/assets/icons/windows.svelte";
+	import MPass from "@/assets/mPass.svelte";
 	import osInfo from "@/state/osInfo.svelte";
 	import preferences from "@/state/preferences.svelte";
-	import Icon from "@iconify/svelte";
+
+	import { Minus, Square, X } from "lucide-svelte";
 </script>
 
 <div class="flex flex-col w-full gap-1.5">
@@ -18,15 +23,25 @@
 					></div>
 				{/if}
 				<p class="text-lg text-foreground font-semibold">System</p>
-				<Icon
-					icon={osInfo.os === "windows"
-						? "simple-icons:windows"
-						: osInfo.os === "linux"
-							? "simple-icons:linux"
-							: "simple-icons:apple"}
-					font-size="48"
-					class="self-center h-full"
-				/>
+				{#if osInfo.os === "windows"}
+					<Windows
+						width={48}
+						height={48}
+						className="self-center h-full"
+					/>
+				{:else if osInfo.os === "linux"}
+					<Linux
+						width={48}
+						height={48}
+						className="self-center h-full"
+					/>
+				{:else}
+					<Apple
+						width={48}
+						height={48}
+						className="self-center h-full"
+					/>
+				{/if}
 			</button>
 			<button
 				onclick={() => preferences.setWindowDecorations("custom")}
@@ -38,11 +53,7 @@
 					></div>
 				{/if}
 				<p class="text-lg text-foreground font-semibold">Custom</p>
-				<Icon
-					icon="lucide:lock"
-					font-size="48"
-					class="self-center h-full"
-				/>
+				<MPass width={64} height={64} className="self-center h-full" />
 			</button>
 			<button
 				onclick={() => preferences.setWindowDecorations("off")}
@@ -54,11 +65,7 @@
 					></div>
 				{/if}
 				<p class="text-lg text-foreground font-semibold">None</p>
-				<Icon
-					icon="lucide:x"
-					font-size="48"
-					class="self-center h-full"
-				/>
+				<X class="self-center h-full" size={48} />
 			</button>
 		</div>
 	</div>
@@ -79,9 +86,9 @@
 					<div
 						class="flex flex-row gap-2 justify-start items-center w-full"
 					>
-						<Icon icon="lucide:x" font-size="24" />
-						<Icon icon="lucide:minus" font-size="18" />
-						<Icon icon="lucide:square" font-size="16" />
+						<X size={24} />
+						<Minus size={20} />
+						<Square size={16} />
 					</div>
 					<div class="w-1/3 h-4 bg-accent rounded-full"></div>
 					<div class="w-1/5 h-4 bg-accent rounded-full"></div>
@@ -101,9 +108,9 @@
 					<div
 						class="flex flex-row gap-2 justify-end w-full items-center"
 					>
-						<Icon icon="lucide:minus" font-size="18" />
-						<Icon icon="lucide:square" font-size="16" />
-						<Icon icon="lucide:x" font-size="24" />
+						<Minus size={20} />
+						<Square size={16} />
+						<X size={24} />
 					</div>
 					<div class="w-1/3 h-4 bg-accent rounded-full"></div>
 					<div class="w-1/5 h-4 bg-accent rounded-full"></div>

@@ -1,22 +1,9 @@
 import auth from "@/state/auth.svelte";
 import passwords from "@/state/passwords.svelte";
-import server from "@/state/server.svelte";
 
-import { getErrorMessage, makeRequest } from "@/utils";
+import type { Step1Response, Step2Response } from "@/types";
+import { makeRequest } from "@/utils";
 import { invoke } from "@tauri-apps/api/core";
-
-interface Step1Response {
-	authId: string;
-	email: string;
-	username?: string;
-	salt: string;
-	B: string;
-}
-
-interface Step2Response {
-	M2: string;
-	token: string;
-}
 
 export const step1 = async (identifier: string): Promise<Step1Response> => {
 	const res = await makeRequest("/auth/step1", "POST", {
