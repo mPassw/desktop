@@ -1,9 +1,9 @@
-import { relaunch } from "@tauri-apps/plugin-process";
 import osInfo from "./osInfo.svelte";
+import loadersState from "./loaders.svelte";
 
 import { check } from "@tauri-apps/plugin-updater";
 import { toast } from "svelte-sonner";
-import loadersState from "./loaders.svelte";
+import { relaunch } from "@tauri-apps/plugin-process";
 
 class AutoUpdate {
 	public isUpdateAvailable: boolean = $state(false);
@@ -14,8 +14,8 @@ class AutoUpdate {
 	public currentUpdateStatus: string | undefined = $state(undefined);
 
 	public checkForUpdates = async (): Promise<void> => {
-		// if (osInfo.os !== "windows" || process.env.NODE_ENV === "development")
-		// 	return;
+		if (osInfo.os !== "windows" || process.env.NODE_ENV === "development")
+			return;
 
 		try {
 			const update = await check();

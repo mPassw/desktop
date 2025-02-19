@@ -2,11 +2,11 @@
 	import * as Dialog from "$lib/components/ui/dialog";
 	import * as Tooltip from "$lib/components/ui/tooltip";
 
-	import newPassword from "@/state/newPassword.svelte";
-	import passwordGenerator from "@/state/passwordGenerator.svelte";
-	import auth from "@/state/auth.svelte";
-	import passwords from "@/state/passwords.svelte";
-	import loadersState from "@/state/loaders.svelte";
+	import newPassword from "@/services/newPassword.svelte";
+	import passwordGenerator from "@/services/passwordGenerator.svelte";
+	import auth from "@/services/auth.svelte";
+	import passwords from "@/services/passwords.svelte";
+	import loadersState from "@/services/loaders.svelte";
 
 	import { Button, buttonVariants } from "@/components/ui/button";
 	import { Input } from "@/components/ui/input";

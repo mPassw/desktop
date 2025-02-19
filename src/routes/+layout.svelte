@@ -2,12 +2,13 @@
 	import "../app.css";
 
 	import * as Tooltip from "$lib/components/ui/tooltip";
-	import preferences from "@/state/preferences.svelte";
+	import preferences from "@/services/preferences.svelte";
 	import Decorations from "@/layout/root/decorations.svelte";
-	import osInfo from "@/state/osInfo.svelte";
-	import auth from "@/state/auth.svelte";
-	import loadersState from "@/state/loaders.svelte";
-	import autoUpdate from "@/state/autoUpdate.svelte";
+	import osInfo from "@/services/osInfo.svelte";
+	import auth from "@/services/auth.svelte";
+	import loadersState from "@/services/loaders.svelte";
+	import autoUpdate from "@/services/autoUpdate.svelte";
+	import UpdateDialog from "@/layout/root/updateDialog.svelte";
 
 	import { ModeWatcher } from "mode-watcher";
 	import { Toaster } from "@/components/ui/sonner";
@@ -15,7 +16,6 @@
 	import { arch, hostname, type, version } from "@tauri-apps/plugin-os";
 	import { getVersion } from "@tauri-apps/api/app";
 	import { FullScreenLoader } from "@/components/animations/loaders";
-	import UpdateDialog from "@/layout/root/updateDialog.svelte";
 
 	let { children } = $props();
 

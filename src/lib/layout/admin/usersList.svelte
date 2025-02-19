@@ -2,9 +2,9 @@
 	import * as Dialog from "$lib/components/ui/dialog";
 
 	import Loader from "@/components/animations/loaders/loader.svelte";
-	import auth from "@/state/auth.svelte";
-	import loadersState from "@/state/loaders.svelte";
-	import admin from "@/state/admin.svelte";
+	import auth from "@/services/auth.svelte";
+	import loadersState from "@/services/loaders.svelte";
+	import admin from "@/services/admin.svelte";
 
 	import { Button } from "@/components/ui/button";
 	import { Users } from "lucide-svelte";

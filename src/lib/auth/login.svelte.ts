@@ -1,5 +1,5 @@
-import auth from "@/state/auth.svelte";
-import passwords from "@/state/passwords.svelte";
+import auth from "@/services/auth.svelte";
+import passwords from "@/services/passwords.svelte";
 
 import type { Step1Response, Step2Response } from "@/types";
 import { makeRequest } from "@/utils";
@@ -43,9 +43,8 @@ export const step2 = async (
 export const calculateEncryptionKey = async (
 	password: string,
 	salt: string
-) => {
-	passwords.encryptionKey = await invoke<Uint8Array>("argon2_hash", {
+): Promise<Uint8Array> =>
+	await invoke<Uint8Array>("argon2_hash", {
 		password: password,
 		salt: salt,
 	});
-};

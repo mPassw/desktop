@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as Select from "$lib/components/ui/select";
-	import passwordGenerator from "@/state/passwordGenerator.svelte";
+	import passwordGenerator from "@/services/passwordGenerator.svelte";
 
 	let selected: string = $derived(
 		passwordGenerator.usernameType === "addressedEmail"

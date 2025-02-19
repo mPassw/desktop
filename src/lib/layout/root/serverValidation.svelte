@@ -1,7 +1,7 @@
 <script lang="ts">
-	import authState from "@/state/auth.svelte";
-	import serverState from "@/state/server.svelte";
-	import loadersState from "@/state/loaders.svelte";
+	import authState from "@/services/auth.svelte";
+	import serverState from "@/services/server.svelte";
+	import loadersState from "@/services/loaders.svelte";
 
 	import { Button } from "@/components/ui/button";
 	import { Input } from "@/components/ui/input";

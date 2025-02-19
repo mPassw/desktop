@@ -1,7 +1,7 @@
 <script lang="ts">
-	import passwordGenerator from "@/state/passwordGenerator.svelte";
+	import passwordGenerator from "@/services/passwordGenerator.svelte";
 
-	import type { HistoryItem } from "@/state/passwordGenerator.svelte";
+	import type { HistoryItem } from "@/services/passwordGenerator.svelte";
 	import { Blurfade } from "@/components/animations/blurfade";
 	import { Button } from "@/components/ui/button";
 	import { toast } from "svelte-sonner";

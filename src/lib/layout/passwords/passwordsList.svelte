@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as Avatar from "$lib/components/ui/avatar";
-	import passwords from "@/state/passwords.svelte";
+	import passwords from "@/services/passwords.svelte";
 
 	import { Badge } from "@/components/ui/badge";
 	import { getDomainFromUrl } from "@/utils";

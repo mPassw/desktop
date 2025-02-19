@@ -1,5 +1,5 @@
 <script lang="ts">
-	import passwordGenerator from "@/state/passwordGenerator.svelte";
+	import passwordGenerator from "@/services/passwordGenerator.svelte";
 
 	import { Switch } from "@/components/ui/switch";
 </script>

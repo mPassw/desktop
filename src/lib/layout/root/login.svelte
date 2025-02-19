@@ -1,8 +1,8 @@
 <script lang="ts">
-	import passwords from "@/state/passwords.svelte";
-	import preferences from "@/state/preferences.svelte";
-	import auth from "@/state/auth.svelte";
-	import loadersState from "@/state/loaders.svelte";
+	import passwords from "@/services/passwords.svelte";
+	import preferences from "@/services/preferences.svelte";
+	import auth from "@/services/auth.svelte";
+	import loadersState from "@/services/loaders.svelte";
 
 	import { Blurfade } from "@/components/animations/blurfade";
 	import { Button } from "@/components/ui/button";
@@ -35,6 +35,7 @@
 			const step1Response = await step1(email);
 			authId = step1Response.authId;
 			email = step1Response.email;
+			auth.salt = step1Response.salt;
 
 			const srpClient = new SRPClientSession(
 				new SRPRoutines(new SRPParameters())
@@ -54,7 +55,10 @@
 
 			await srpClientStep2.step3(hexToBigInt(step2Response.M2));
 
-			await calculateEncryptionKey(password, step1Response.salt);
+			passwords.encryptionKey = await calculateEncryptionKey(
+				password,
+				step1Response.salt
+			);
 			password = "";
 
 			auth.setLogoutTimer();

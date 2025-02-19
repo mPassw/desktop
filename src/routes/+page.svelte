@@ -3,10 +3,10 @@
 	import Login from "@/layout/root/login.svelte";
 	import Registration from "@/layout/root/registration.svelte";
 	import ServerValidation from "@/layout/root/serverValidation.svelte";
-	import auth from "@/state/auth.svelte";
-	import preferences from "@/state/preferences.svelte";
+	import auth from "@/services/auth.svelte";
+	import preferences from "@/services/preferences.svelte";
 	import Icon from "@iconify/svelte";
-	import server from "@/state/server.svelte";
+	import server from "@/services/server.svelte";
 
 	import { Button } from "@/components/ui/button";
 	import { toggleMode } from "mode-watcher";

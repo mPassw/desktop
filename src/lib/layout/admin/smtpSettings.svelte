@@ -2,9 +2,9 @@
 	import * as Dialog from "$lib/components/ui/dialog";
 
 	import Loader from "@/components/animations/loaders/loader.svelte";
-	import admin from "@/state/admin.svelte";
-	import loadersState from "@/state/loaders.svelte";
-	import auth from "@/state/auth.svelte";
+	import admin from "@/services/admin.svelte";
+	import loadersState from "@/services/loaders.svelte";
+	import auth from "@/services/auth.svelte";
 
 	import { Button, buttonVariants } from "@/components/ui/button";
 	import { Input } from "@/components/ui/input";

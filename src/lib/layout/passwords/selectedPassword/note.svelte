@@ -1,6 +1,6 @@
 <script lang="ts">
-	import auth from "@/state/auth.svelte";
-	import passwords from "@/state/passwords.svelte";
+	import auth from "@/services/auth.svelte";
+	import passwords from "@/services/passwords.svelte";
 	import Icon from "@iconify/svelte";
 
 	import { Button } from "@/components/ui/button";

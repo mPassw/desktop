@@ -1,7 +1,7 @@
 <script lang="ts">
-	import passwords from "@/state/passwords.svelte";
-	import auth from "@/state/auth.svelte";
-	import loadersState from "@/state/loaders.svelte";
+	import passwords from "@/services/passwords.svelte";
+	import auth from "@/services/auth.svelte";
+	import loadersState from "@/services/loaders.svelte";
 
 	import { Blurfade } from "@/components/animations/blurfade";
 	import { Button } from "@/components/ui/button";

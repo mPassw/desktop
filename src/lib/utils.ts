@@ -1,5 +1,5 @@
-import server from "./state/server.svelte";
-import auth from "./state/auth.svelte";
+import server from "./services/server.svelte";
+import auth from "./services/auth.svelte";
 
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";

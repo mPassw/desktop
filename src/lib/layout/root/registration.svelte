@@ -1,9 +1,9 @@
 <script lang="ts">
 	import * as Dialog from "$lib/components/ui/dialog";
 
-	import auth from "@/state/auth.svelte";
-	import preferences from "@/state/preferences.svelte";
-	import loadersState from "@/state/loaders.svelte";
+	import auth from "@/services/auth.svelte";
+	import preferences from "@/services/preferences.svelte";
+	import loadersState from "@/services/loaders.svelte";
 
 	import { Blurfade } from "@/components/animations/blurfade";
 	import { Button, buttonVariants } from "@/components/ui/button";

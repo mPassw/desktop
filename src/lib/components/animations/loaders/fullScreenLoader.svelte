@@ -1,6 +1,6 @@
 <script lang="ts">
 	import MPassLoader from "@/assets/mPassLoader.svelte";
-	import loadersState from "@/state/loaders.svelte";
+	import loadersState from "@/services/loaders.svelte";
 
 	import { blur } from "svelte/transition";
 

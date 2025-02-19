@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as ToggleGroup from "$lib/components/ui/toggle-group/index.js";
-	import auth from "@/state/auth.svelte";
-	import preferences from "@/state/preferences.svelte";
+	import auth from "@/services/auth.svelte";
+	import preferences from "@/services/preferences.svelte";
 
 	const values = ["5m", "10m", "30m", "1h", "2h"];
 

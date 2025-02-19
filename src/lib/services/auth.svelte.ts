@@ -13,6 +13,7 @@ class AuthState {
 		| "logged-in" = $state("server-validation");
 	public sessionLength: "5m" | "10m" | "30m" | "1h" | "2h" = $state("30m");
 
+	public salt: string = $state("");
 	public authToken: string = $state("");
 
 	public isAdmin: boolean = $state(false);

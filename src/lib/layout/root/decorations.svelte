@@ -1,5 +1,5 @@
 <script lang="ts">
-	import preferences from "@/state/preferences.svelte";
+	import preferences from "@/services/preferences.svelte";
 
 	import { Button } from "@/components/ui/button";
 	import { getCurrentWindow } from "@tauri-apps/api/window";

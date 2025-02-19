@@ -3,8 +3,8 @@
 	import Linux from "@/assets/icons/linux.svelte";
 	import Windows from "@/assets/icons/windows.svelte";
 	import MPass from "@/assets/mPass.svelte";
-	import osInfo from "@/state/osInfo.svelte";
-	import preferences from "@/state/preferences.svelte";
+	import osInfo from "@/services/osInfo.svelte";
+	import preferences from "@/services/preferences.svelte";
 
 	import { Minus, Square, X } from "lucide-svelte";
 </script>

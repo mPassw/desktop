@@ -2,8 +2,8 @@
 	import * as Dialog from "$lib/components/ui/dialog";
 
 	import Loader from "@/components/animations/loaders/loader.svelte";
-	import autoUpdate from "@/state/autoUpdate.svelte";
-	import loadersState from "@/state/loaders.svelte";
+	import autoUpdate from "@/services/autoUpdate.svelte";
+	import loadersState from "@/services/loaders.svelte";
 
 	import { Button } from "@/components/ui/button";
 </script>

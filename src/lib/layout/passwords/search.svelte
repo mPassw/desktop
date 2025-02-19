@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Icon from "@iconify/svelte";
 	import NewPasswordDialog from "./newPasswordDialog.svelte";
-	import loadersState from "@/state/loaders.svelte";
+	import loadersState from "@/services/loaders.svelte";
 
 	import { Button } from "@/components/ui/button";
 	import { Input } from "@/components/ui/input";

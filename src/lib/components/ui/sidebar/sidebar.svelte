@@ -1,12 +1,14 @@
 <script lang="ts">
-	import authState from "@/state/auth.svelte";
-	import auth from "@/state/auth.svelte";
+	import authState from "@/services/auth.svelte";
+	import auth from "@/services/auth.svelte";
 
 	import { Button } from "../button";
 	import { page } from "$app/state";
 	import { Blurfade } from "@/components/animations/blurfade";
 	import {
 		ArrowDownUp,
+		ArrowUp,
+		CircleFadingArrowUp,
 		KeyRound,
 		LogOut,
 		RectangleEllipsis,
@@ -15,6 +17,7 @@
 		User,
 		Wrench,
 	} from "lucide-svelte";
+	import autoUpdate from "@/services/autoUpdate.svelte";
 
 	const navigation = [
 		{
@@ -78,6 +81,19 @@
 	</div>
 
 	<div class="flex flex-col gap-1.5 items-start">
+		{#if autoUpdate.isUpdateAvailable}
+			<div class="flex flex-row items-center ml-[5px]">
+				<Button
+					onclick={() => (autoUpdate.isUpdateDialogOpen = true)}
+					variant="link"
+					class="text-lg"
+				>
+					<CircleFadingArrowUp size={24} />
+					<span>Update</span>
+				</Button>
+			</div>
+		{/if}
+
 		{#if authState.isAdmin}
 			<div class="flex flex-row items-center">
 				<div

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import auth from "@/state/auth.svelte";
-	import passwords from "@/state/passwords.svelte";
+	import auth from "@/services/auth.svelte";
+	import passwords from "@/services/passwords.svelte";
 	import Icon from "@iconify/svelte";
 	import Search from "@/layout/passwords/search.svelte";
 	import PasswordsList from "./passwordsList.svelte";
@@ -13,7 +13,7 @@
 	import { page } from "$app/state";
 	import { afterNavigate } from "$app/navigation";
 	import { Loader } from "@/components/animations/loaders";
-	import loadersState from "@/state/loaders.svelte";
+	import loadersState from "@/services/loaders.svelte";
 	import type { Password } from "@/types";
 
 	/**

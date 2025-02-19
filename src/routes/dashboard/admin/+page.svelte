@@ -1,6 +1,6 @@
 <script lang="ts">
-	import loadersState from "@/state/loaders.svelte";
-	import admin from "@/state/admin.svelte";
+	import loadersState from "@/services/loaders.svelte";
+	import admin from "@/services/admin.svelte";
 	import SmtpSettings from "@/layout/admin/smtpSettings.svelte";
 	import UsersList from "@/layout/admin/usersList.svelte";
 

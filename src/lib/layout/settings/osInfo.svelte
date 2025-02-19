@@ -1,7 +1,7 @@
 <script lang="ts">
-	import auth from "@/state/auth.svelte";
-	import osInfo from "@/state/osInfo.svelte";
-	import server from "@/state/server.svelte";
+	import auth from "@/services/auth.svelte";
+	import osInfo from "@/services/osInfo.svelte";
+	import server from "@/services/server.svelte";
 </script>
 
 <div class="flex flex-col w-full">

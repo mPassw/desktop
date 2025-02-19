@@ -1,10 +1,10 @@
 <script lang="ts">
 	import * as AlertDialog from "$lib/components/ui/alert-dialog";
 
-	import auth from "@/state/auth.svelte";
-	import passwords from "@/state/passwords.svelte";
+	import auth from "@/services/auth.svelte";
+	import passwords from "@/services/passwords.svelte";
 	import Icon from "@iconify/svelte";
-	import loadersState from "@/state/loaders.svelte";
+	import loadersState from "@/services/loaders.svelte";
 
 	import { Button, buttonVariants } from "@/components/ui/button";
 	import { toast } from "svelte-sonner";

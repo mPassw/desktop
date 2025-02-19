@@ -3,8 +3,8 @@
 	import Icon from "@iconify/svelte";
 	import passwordGenerator, {
 		type HistoryItem,
-	} from "@/state/passwordGenerator.svelte";
-	import auth from "@/state/auth.svelte";
+	} from "@/services/passwordGenerator.svelte";
+	import auth from "@/services/auth.svelte";
 	import Password from "@/layout/generator/password/password.svelte";
 	import Username from "@/layout/generator/username/username.svelte";
 	import History from "@/layout/generator/history.svelte";

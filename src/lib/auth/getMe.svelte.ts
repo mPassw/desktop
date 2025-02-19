@@ -1,4 +1,4 @@
-import auth from "@/state/auth.svelte";
+import auth from "@/services/auth.svelte";
 import type { User } from "@/types";
 
 import { makeRequest } from "@/utils";
