@@ -146,6 +146,9 @@
 					interactOutsideBehavior={loadersState.isDialogLoaderVisible
 						? "ignore"
 						: "close"}
+					escapeKeydownBehavior={loadersState.isDialogLoaderVisible
+						? "ignore"
+						: "close"}
 				>
 					<Dialog.Header>
 						<Dialog.Title>Send test email</Dialog.Title>

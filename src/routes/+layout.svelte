@@ -7,6 +7,7 @@
 	import osInfo from "@/state/osInfo.svelte";
 	import auth from "@/state/auth.svelte";
 	import loadersState from "@/state/loaders.svelte";
+	import autoUpdate from "@/state/autoUpdate.svelte";
 
 	import { ModeWatcher } from "mode-watcher";
 	import { Toaster } from "@/components/ui/sonner";
@@ -14,6 +15,7 @@
 	import { arch, hostname, type, version } from "@tauri-apps/plugin-os";
 	import { getVersion } from "@tauri-apps/api/app";
 	import { FullScreenLoader } from "@/components/animations/loaders";
+	import UpdateDialog from "@/layout/root/updateDialog.svelte";
 
 	let { children } = $props();
 
@@ -23,6 +25,7 @@
 		osInfo.arch = arch();
 		osInfo.hostname = (await hostname()) ?? "unknown";
 		osInfo.appVersion = await getVersion();
+		await autoUpdate.checkForUpdates();
 
 		await preferences.setWindowDecorations(
 			(await preferences.getWindowDecorations()) ?? "system"
@@ -38,6 +41,7 @@
 <ModeWatcher />
 <Toaster richColors class="select-none" />
 <FullScreenLoader />
+<UpdateDialog />
 
 {#if process.env.NODE_ENV === "development"}
 	<p
