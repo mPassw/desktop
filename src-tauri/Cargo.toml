@@ -30,3 +30,6 @@ tokio = { version = "1.43.0", features = ["full"] }
 keyring = { version = "3.6.1", features = ["apple-native", "windows-native", "sync-secret-service"] }
 chacha20poly1305 = { version = "0.10.1", features = ["alloc"] }
 
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-updater = "2"
+
