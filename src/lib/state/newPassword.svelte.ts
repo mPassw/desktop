@@ -1,5 +1,6 @@
-import type { Password } from "./passwords.svelte";
 import passwords from "./passwords.svelte";
+
+import type { Password } from "@/types";
 
 class NewPassword {
 	public title: string = $state("");
@@ -19,29 +20,16 @@ class NewPassword {
 			id: 0,
 			inTrash: false,
 			title: this.title,
-			username: {
-				value: this.username.length ? this.username : "",
-				salt: "",
-				nonce: "",
-			},
-			password: {
-				value: this.password.length ? this.password : "",
-				salt: "",
-				nonce: "",
-			},
-			note: {
-				value: this.note.length ? this.note : "",
-				salt: "",
-				nonce: "",
-			},
+			username: this.username.length ? this.username : null,
+			password: this.password.length ? this.password : null,
+			note: this.note.length ? this.note : null,
 			websites: this.websites,
 			tags: this.tags,
-
 			createdAt: "",
 			updatedAt: "",
 		};
 
-		return passwords.encryptPassword(password);
+		return await passwords.encryptPassword(password);
 	};
 
 	public reset = (): void => {

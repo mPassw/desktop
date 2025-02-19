@@ -1,5 +1,6 @@
 <script lang="ts">
 	import * as AlertDialog from "$lib/components/ui/alert-dialog";
+
 	import auth from "@/state/auth.svelte";
 	import passwords from "@/state/passwords.svelte";
 	import Icon from "@iconify/svelte";

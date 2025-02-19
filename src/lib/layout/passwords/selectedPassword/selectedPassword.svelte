@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Icon from "@iconify/svelte";
 	import Buttons from "./buttons.svelte";
 	import Title from "./title.svelte";
 	import Username from "./username.svelte";

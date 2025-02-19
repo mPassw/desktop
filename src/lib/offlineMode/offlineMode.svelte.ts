@@ -1,5 +1,6 @@
-import passwords, { type Password } from "@/state/passwords.svelte";
+import passwords from "@/state/passwords.svelte";
 import preferences from "@/state/preferences.svelte";
+import type { Password } from "@/types";
 
 import { invoke } from "@tauri-apps/api/core";
 

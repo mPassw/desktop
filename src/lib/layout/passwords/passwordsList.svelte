@@ -1,12 +1,11 @@
 <script lang="ts">
 	import * as Avatar from "$lib/components/ui/avatar";
 	import passwords from "@/state/passwords.svelte";
-	import Icon from "@iconify/svelte";
 
 	import { Badge } from "@/components/ui/badge";
-	import type { Password } from "@/state/passwords.svelte";
 	import { getDomainFromUrl } from "@/utils";
 	import { GlobeLock } from "lucide-svelte";
+	import type { Password } from "@/types";
 
 	let {
 		filteredPasswords,

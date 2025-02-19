@@ -19,7 +19,7 @@
 	<h3 class="text-xl">Password</h3>
 	<div class="flex flex-row items-center gap-1">
 		<Input
-			bind:value={passwords.selectedPassword!.password!.value}
+			bind:value={passwords.selectedPassword!.password}
 			readonly={auth.isOfflineMode || !passwords.isEditing}
 			type={isPasswordRevealed ? "text" : "password"}
 			placeholder="********"
@@ -29,7 +29,7 @@
 				variant="outline"
 				size="icon"
 				onclick={() => (isPasswordRevealed = !isPasswordRevealed)}
-				disabled={!passwords.selectedPassword!.password.value}
+				disabled={!passwords.selectedPassword!.password}
 			>
 				{#if isPasswordRevealed}
 					<EyeOff size={20} />
@@ -40,9 +40,9 @@
 			<Button
 				variant="outline"
 				size="icon"
-				disabled={!passwords.selectedPassword!.password.value}
+				disabled={!passwords.selectedPassword!.password}
 				onclick={async () => {
-					await copyText(passwords.selectedPassword!.password!.value);
+					await copyText(passwords.selectedPassword!.password!);
 				}}
 			>
 				<Copy size={20} />

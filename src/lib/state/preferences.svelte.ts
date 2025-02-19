@@ -1,8 +1,8 @@
+import type { Password } from "@/types";
 import auth from "./auth.svelte";
 
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { load, Store } from "@tauri-apps/plugin-store";
-import type { Password } from "./passwords.svelte";
 
 class Preferences {
 	public windowDecorations: "off" | "system" | "custom" = $state("system");

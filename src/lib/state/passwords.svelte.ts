@@ -1,7 +1,7 @@
 import auth from "./auth.svelte";
 import preferences from "./preferences.svelte";
 
-import { getErrorMessage, makeRequest } from "@/utils";
+import { makeRequest } from "@/utils";
 import { invoke } from "@tauri-apps/api/core";
 import { getOfflineModePasswords } from "@/offlineMode/offlineMode.svelte";
 import type { Password } from "@/types";
@@ -11,7 +11,7 @@ class PasswordsState {
 	public passwords: Password[] = $state([]);
 
 	public selectedPassword: Password | null = $state(null);
-	public isEditing: boolean = $state(false); // should be disabled in offline mode
+	public isEditing: boolean = $state(false);
 
 	/**
 	 * Get passwords from server or offline mode. Automatically selects first password
@@ -59,9 +59,6 @@ class PasswordsState {
 		this.selectedPassword = null;
 		this.selectedPassword = {
 			...password,
-			username: { ...password.username },
-			password: { ...password.password },
-			note: { ...password.note },
 			websites: [...password.websites],
 			tags: [...password.tags],
 		};
@@ -83,9 +80,18 @@ class PasswordsState {
 			authorization: true,
 			body: JSON.stringify({
 				title: password.title,
-				username: password.username.value ? password.username : null,
-				password: password.password.value ? password.password : null,
-				note: password.note.value ? password.note : null,
+				username:
+					password.username && password.username.length
+						? password.username
+						: null,
+				password:
+					password.password && password.password.length
+						? password.password
+						: null,
+				note:
+					password.note && password.note.length
+						? password.note
+						: null,
 				websites: password.websites,
 				tags: password.tags,
 				inTrash: password.inTrash,
@@ -136,13 +142,18 @@ class PasswordsState {
 			body: JSON.stringify({
 				title: password.title,
 				inTrash: false,
-				username: password.username.value.length
-					? password.username
-					: null,
-				password: password.password.value.length
-					? password.password
-					: null,
-				note: password.note.value.length ? password.note : null,
+				username:
+					password.username && password.username.length
+						? password.username
+						: null,
+				password:
+					password.password && password.password.length
+						? password.password
+						: null,
+				note:
+					password.note && password.note.length
+						? password.note
+						: null,
 				websites: password.websites,
 				tags: password.tags,
 			}),
@@ -152,80 +163,86 @@ class PasswordsState {
 	};
 
 	public encryptPassword = async (password: Password): Promise<Password> => {
-		if (password.username.value) {
+		if (password.username) {
 			const { encrypted, salt, nonce } = await invoke<{
 				encrypted: string;
 				salt: string;
 				nonce: string;
 			}>("encrypt_string", {
 				encryptionKey: this.encryptionKey,
-				plaintext: password.username.value,
+				plaintext: password.username,
 			});
 
-			password.username.value = encrypted;
-			password.username.salt = salt;
-			password.username.nonce = nonce;
+			password.username = `${encrypted}:${salt}:${nonce}`;
 		}
 
-		if (password.password.value) {
+		if (password.password) {
 			const { encrypted, salt, nonce } = await invoke<{
 				encrypted: string;
 				salt: string;
 				nonce: string;
 			}>("encrypt_string", {
 				encryptionKey: this.encryptionKey,
-				plaintext: password.password.value,
+				plaintext: password.password,
 			});
 
-			password.password.value = encrypted;
-			password.password.salt = salt;
-			password.password.nonce = nonce;
+			password.password = `${encrypted}:${salt}:${nonce}`;
 		}
 
-		if (password.note.value) {
+		if (password.note) {
 			const { encrypted, salt, nonce } = await invoke<{
 				encrypted: string;
 				salt: string;
 				nonce: string;
 			}>("encrypt_string", {
 				encryptionKey: this.encryptionKey,
-				plaintext: password.note.value,
+				plaintext: password.note,
 			});
 
-			password.note.value = encrypted;
-			password.note.salt = salt;
-			password.note.nonce = nonce;
+			password.note = `${encrypted}:${salt}:${nonce}`;
 		}
 
 		return password;
 	};
 
 	public decryptPassword = async (password: Password): Promise<Password> => {
-		if (password.username.value) {
-			password.username.value = await invoke<string>("decrypt_string", {
-				encryptionKey: this.encryptionKey,
-				encrypted: password.username.value,
-				salt: password.username.salt,
-				nonce: password.username.nonce,
-			});
+		if (password.username) {
+			const parts = password.username.split(":");
+			if (parts.length === 3) {
+				const [encrypted, salt, nonce] = parts;
+				password.username = await invoke<string>("decrypt_string", {
+					encryptionKey: this.encryptionKey,
+					encrypted: encrypted,
+					salt: salt,
+					nonce: nonce,
+				});
+			}
 		}
 
-		if (password.password.value) {
-			password.password.value = await invoke<string>("decrypt_string", {
-				encryptionKey: this.encryptionKey,
-				encrypted: password.password.value,
-				salt: password.password.salt,
-				nonce: password.password.nonce,
-			});
+		if (password.password) {
+			const parts = password.password.split(":");
+			if (parts.length === 3) {
+				const [encrypted, salt, nonce] = parts;
+				password.password = await invoke<string>("decrypt_string", {
+					encryptionKey: this.encryptionKey,
+					encrypted: encrypted,
+					salt: salt,
+					nonce: nonce,
+				});
+			}
 		}
 
-		if (password.note.value) {
-			password.note.value = await invoke<string>("decrypt_string", {
-				encryptionKey: this.encryptionKey,
-				encrypted: password.note.value,
-				salt: password.note.salt,
-				nonce: password.note.nonce,
-			});
+		if (password.note) {
+			const parts = password.note.split(":");
+			if (parts.length === 3) {
+				const [encrypted, salt, nonce] = parts;
+				password.note = await invoke<string>("decrypt_string", {
+					encryptionKey: this.encryptionKey,
+					encrypted: encrypted,
+					salt: salt,
+					nonce: nonce,
+				});
+			}
 		}
 
 		return password;

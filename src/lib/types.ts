@@ -4,7 +4,7 @@
 export interface Step1Response {
 	authId: string;
 	email: string;
-	username?: string;
+	username: string | null;
 	salt: string;
 	B: string;
 }
@@ -18,17 +18,17 @@ export interface Step2Response {
 }
 
 export interface SMTPSettings {
-	host?: string;
-	port?: number;
-	username?: string;
-	password?: string;
-	ssl?: boolean;
+	host: string | null;
+	port: number | null;
+	username: string | null;
+	password: string | null;
+	ssl: boolean | null;
 }
 
 export interface User {
 	id: number;
 	email: string;
-	username?: string;
+	username: string | null;
 	verified: boolean;
 	admin: boolean;
 	createdAt: string;
@@ -39,17 +39,11 @@ export interface Password {
 	id: number;
 	inTrash: boolean;
 	title: string;
-	username: EncryptedField;
-	password: EncryptedField;
-	note: EncryptedField;
+	username: string | null;
+	password: string | null;
+	note: string | null;
 	websites: string[];
 	tags: string[];
 	createdAt: string;
 	updatedAt: string;
-}
-
-export interface EncryptedField {
-	value: string;
-	salt: string;
-	nonce: string;
 }

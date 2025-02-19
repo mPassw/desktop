@@ -17,26 +17,28 @@
 
 <div class="flex flex-col gap-1">
 	<h3 class="text-xl">Note</h3>
-	<div class="flex flex-row items-start gap-1">
-		<Textarea
-			bind:value={passwords.selectedPassword!.note!.value}
-			readonly={auth.isOfflineMode || !passwords.isEditing}
-			placeholder="Empty..."
-			maxlength={64}
-			oninput={autoResize}
-			class="min-h-fit"
-		/>
-		<div class="flex flex-col gap-1">
-			<Button
-				variant="outline"
-				size="icon"
-				disabled={!passwords.selectedPassword!.note.value}
-				onclick={async () => {
-					await copyText(passwords.selectedPassword!.note!.value);
-				}}
-			>
-				<Icon icon="lucide:copy" font-size="20" />
-			</Button>
+	{#if passwords.selectedPassword}
+		<div class="flex flex-row items-start gap-1">
+			<Textarea
+				bind:value={passwords.selectedPassword.note}
+				readonly={auth.isOfflineMode || !passwords.isEditing}
+				placeholder="Empty..."
+				maxlength={64}
+				oninput={autoResize}
+				class="min-h-fit"
+			/>
+			<div class="flex flex-col gap-1">
+				<Button
+					variant="outline"
+					size="icon"
+					disabled={!passwords.selectedPassword.note}
+					onclick={async () => {
+						await copyText(passwords.selectedPassword!.note!);
+					}}
+				>
+					<Icon icon="lucide:copy" font-size="20" />
+				</Button>
+			</div>
 		</div>
-	</div>
+	{/if}
 </div>

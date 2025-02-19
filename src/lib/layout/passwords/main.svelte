@@ -1,6 +1,6 @@
 <script lang="ts">
 	import auth from "@/state/auth.svelte";
-	import passwords, { type Password } from "@/state/passwords.svelte";
+	import passwords from "@/state/passwords.svelte";
 	import Icon from "@iconify/svelte";
 	import Search from "@/layout/passwords/search.svelte";
 	import PasswordsList from "./passwordsList.svelte";
@@ -14,6 +14,7 @@
 	import { afterNavigate } from "$app/navigation";
 	import { Loader } from "@/components/animations/loaders";
 	import loadersState from "@/state/loaders.svelte";
+	import type { Password } from "@/types";
 
 	/**
 	 * Since this component is used in two different pages, we need to check if the current page is the trash page

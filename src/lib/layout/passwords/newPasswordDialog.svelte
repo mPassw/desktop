@@ -6,13 +6,13 @@
 	import passwordGenerator from "@/state/passwordGenerator.svelte";
 	import auth from "@/state/auth.svelte";
 	import passwords from "@/state/passwords.svelte";
+	import loadersState from "@/state/loaders.svelte";
 
 	import { Button, buttonVariants } from "@/components/ui/button";
 	import { Input } from "@/components/ui/input";
 	import { Textarea } from "@/components/ui/textarea";
 	import { Plus, RefreshCcw, Eye, EyeOff, Trash, Save } from "lucide-svelte";
 	import { toast } from "svelte-sonner";
-	import loadersState from "@/state/loaders.svelte";
 
 	let isDialogOpen: boolean = $state(false);
 	let isLoading: boolean = $state(false);
