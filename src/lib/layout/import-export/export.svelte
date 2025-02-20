@@ -3,14 +3,12 @@
 
 	import loadersState from "@/services/loaders.svelte";
 	import exportService from "@/services/export.svelte";
-	import auth from "@/services/auth.svelte";
 	import passwords from "@/services/passwords.svelte";
 
 	import { Button } from "@/components/ui/button";
 	import { Input } from "@/components/ui/input";
 	import { Label } from "@/components/ui/label";
 	import { toast } from "svelte-sonner";
-	import { calculateEncryptionKey } from "@/auth/login.svelte";
 
 	let masterPassword: string = $state("");
 
@@ -18,15 +16,9 @@
 		try {
 			loadersState.isFullscreenLoaderVisible = true;
 
-			const derivedKey = await calculateEncryptionKey(
-				masterPassword,
-				auth.salt
-			);
-
-			if (derivedKey.toString() !== passwords.encryptionKey.toString()) {
+			if (!(await passwords.verifyMasterPassword(masterPassword))) {
 				throw new Error("Invalid master password");
 			}
-
 			masterPassword = "";
 
 			await exportService.export();

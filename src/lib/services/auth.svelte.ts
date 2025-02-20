@@ -1,6 +1,10 @@
+import passwords from "./passwords.svelte";
+
 import { goto } from "$app/navigation";
-import { getJWTExpiration } from "@/utils";
+import { getJWTExpiration, makeRequest } from "@/utils";
 import { toast } from "svelte-sonner";
+import { generateSaltAndVerifier } from "@/auth/createUser.svelte";
+import { calculateEncryptionKey } from "@/auth/login.svelte";
 
 class AuthState {
 	public loginState:
@@ -44,6 +48,57 @@ class AuthState {
 			await this.logOut();
 			toast.warning("Session expired");
 		}, timeLeft);
+	};
+
+	public updateUser = async (
+		newEmail: string | null,
+		newUsername: string | null,
+		salt: bigint | null,
+		verifier: bigint | null,
+		updatePasswords: boolean = false
+	) => {
+		await makeRequest("/users/@me", "PATCH", {
+			authorization: true,
+			body: JSON.stringify({
+				email: newEmail,
+				username: newUsername,
+				salt: salt ? salt.toString(16) : null,
+				verifier: verifier ? verifier.toString(16) : null,
+				passwords: updatePasswords
+					? passwords.passwords.map((p) => ({
+							id: p.id,
+							title: p.title,
+							username: p.username,
+							password: p.password,
+							note: p.note,
+							websites: p.websites,
+							tags: p.tags,
+							inTrash: p.inTrash,
+					  }))
+					: null,
+			}),
+		});
+	};
+
+	public updateEmail = async (newEmail: string, masterPassword: string) => {
+		await passwords.decryptAllPasswords();
+
+		for (const pwd of passwords.passwords) {
+			console.log(pwd.username ?? pwd.password);
+		}
+
+		const { salt, verifier } = await generateSaltAndVerifier(
+			newEmail,
+			masterPassword
+		);
+		passwords.encryptionKey = await calculateEncryptionKey(
+			masterPassword,
+			salt.toString(16)
+		);
+
+		await passwords.encryptAllPasswords();
+
+		await this.updateUser(newEmail, null, salt, verifier, true);
 	};
 
 	public logOut = async () => {

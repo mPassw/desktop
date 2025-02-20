@@ -1,10 +1,11 @@
 import auth from "./auth.svelte";
 import preferences from "./preferences.svelte";
 
+import type { Password } from "@/types";
 import { makeRequest } from "@/utils";
 import { invoke } from "@tauri-apps/api/core";
 import { getOfflineModePasswords } from "@/offlineMode/offlineMode.svelte";
-import type { Password } from "@/types";
+import { calculateEncryptionKey } from "@/auth/login.svelte";
 
 class PasswordsState {
 	public encryptionKey: Uint8Array = $state(new Uint8Array(0));
@@ -12,6 +13,17 @@ class PasswordsState {
 
 	public selectedPassword: Password | null = $state(null);
 	public isEditing: boolean = $state(false);
+
+	/**
+	 * Verifies if the provided password matches the master password
+	 */
+	public verifyMasterPassword = async (
+		password: string
+	): Promise<boolean> => {
+		const derivedKey = await calculateEncryptionKey(password, auth.salt);
+
+		return derivedKey.toString() === this.encryptionKey.toString();
+	};
 
 	/**
 	 * Get passwords from server or offline mode. Automatically selects first password
@@ -162,8 +174,20 @@ class PasswordsState {
 		await this.getPasswords();
 	};
 
+	/**
+	 * Encrypts password fields. Throws an error if password is already encrypted
+	 */
 	public encryptPassword = async (password: Password): Promise<Password> => {
+		const isEncrypted = (str: string): boolean => {
+			const parts = str.split(":");
+			return parts.length === 3 && parts.every((part) => part.length > 0);
+		};
+
 		if (password.username) {
+			if (isEncrypted(password.username)) {
+				throw new Error("Username is already encrypted");
+			}
+
 			const { encrypted, salt, nonce } = await invoke<{
 				encrypted: string;
 				salt: string;
@@ -177,6 +201,10 @@ class PasswordsState {
 		}
 
 		if (password.password) {
+			if (isEncrypted(password.password)) {
+				throw new Error("Password is already encrypted");
+			}
+
 			const { encrypted, salt, nonce } = await invoke<{
 				encrypted: string;
 				salt: string;
@@ -190,6 +218,10 @@ class PasswordsState {
 		}
 
 		if (password.note) {
+			if (isEncrypted(password.note)) {
+				throw new Error("Note is already encrypted");
+			}
+
 			const { encrypted, salt, nonce } = await invoke<{
 				encrypted: string;
 				salt: string;
@@ -246,6 +278,18 @@ class PasswordsState {
 		}
 
 		return password;
+	};
+
+	public encryptAllPasswords = async () => {
+		for (const password of this.passwords) {
+			await this.encryptPassword(password);
+		}
+	};
+
+	public decryptAllPasswords = async () => {
+		for (const password of this.passwords) {
+			await this.decryptPassword(password);
+		}
 	};
 }
 
