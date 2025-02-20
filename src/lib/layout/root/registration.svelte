@@ -224,19 +224,19 @@
 		<Dialog.Content>
 			<Dialog.Header>
 				<Dialog.Title>Please read carefully</Dialog.Title>
-				<Dialog.Description>
-					Your password CANNOT be changed after registration. Please
-					make sure to remember it and keep it in a safe place. If you
-					lose your password, you will permanently lose access to your
-					account.
+				<Dialog.Description class="text-md leading-5">
+					While you can change your password once logged in, there is
+					no password recovery option. If you lose your password, you
+					will permanently lose access to your account. Please make
+					sure to remember it and keep it in a safe place.
 				</Dialog.Description>
 			</Dialog.Header>
-			<div class="flex justify-end gap-2">
+			<Dialog.Footer>
 				<Dialog.Close class={buttonVariants({ variant: "outline" })}>
 					Cancel
 				</Dialog.Close>
 				<Button onclick={register}>I understand, continue</Button>
-			</div>
+			</Dialog.Footer>
 		</Dialog.Content>
 	</Dialog.Root>
 	<div class="flex flex-row justify-between w-full max-w-[300px]">

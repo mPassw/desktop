@@ -12,14 +12,14 @@
 
 	onMount(async () => {
 		try {
-			loadersState.isAdminPageLoaderVisible = true;
+			loadersState.isLoaderVisible = true;
 
 			await admin.getSmtpSettings();
 			await admin.getUsers();
 		} catch (err: any) {
 			toast.error(err.message ?? "Unknown error");
 		} finally {
-			loadersState.isAdminPageLoaderVisible = false;
+			loadersState.isLoaderVisible = false;
 		}
 	});
 
@@ -32,10 +32,10 @@
 <Blurfade
 	class="p-3 flex flex-col w-full h-full gap-1.5 relative overflow-auto"
 >
-	{#if loadersState.isAdminPageLoaderVisible}
+	{#if loadersState.isLoaderVisible}
 		<Loader />
 	{:else}
-		{#if loadersState.isAdminPageTransparentLoaderVisible}
+		{#if loadersState.isTransparentLoaderVisible}
 			<Loader />
 		{/if}
 		<div class="flex flex-col gap-1.5 w-full">

@@ -11,7 +11,6 @@
 	import { toast } from "svelte-sonner";
 	import { Button, buttonVariants } from "@/components/ui/button";
 
-	let isDialogOpen: boolean = $state(false);
 	let newEmail: string = $state("");
 	let masterPassword: string = $state("");
 
@@ -64,7 +63,7 @@
 		</div>
 	</div>
 	<div class="self-end">
-		<Dialog.Root bind:open={isDialogOpen}>
+		<Dialog.Root>
 			<Dialog.Trigger
 				class="self-end {buttonVariants({ variant: 'secondary' })}"
 			>
@@ -95,12 +94,11 @@
 					</Dialog.Description>
 				</Dialog.Header>
 				<Dialog.Footer>
-					<Button
-						variant="secondary"
-						onclick={() => (isDialogOpen = false)}
+					<Dialog.Close
+						class={buttonVariants({ variant: "secondary" })}
 					>
-						Cancel
-					</Button>
+						Close
+					</Dialog.Close>
 					<Button variant="default" onclick={updateEmail}>
 						Update
 					</Button>

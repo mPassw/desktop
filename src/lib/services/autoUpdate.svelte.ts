@@ -13,7 +13,9 @@ class AutoUpdate {
 
 	public currentUpdateStatus: string | undefined = $state(undefined);
 
-	public checkForUpdates = async (): Promise<void> => {
+	public checkForUpdates = async (
+		notifyIfNotAvailable: boolean = false
+	): Promise<void> => {
 		if (osInfo.os !== "windows" || process.env.NODE_ENV === "development")
 			return;
 
@@ -25,6 +27,10 @@ class AutoUpdate {
 				this.isUpdateDialogOpen = true;
 
 				this.availableVersion = update.version;
+			} else {
+				if (notifyIfNotAvailable) {
+					toast.success("No updates available");
+				}
 			}
 		} catch (err: any) {
 			toast.warning(`Error checking for updates: ${err.message}`);

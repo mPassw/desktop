@@ -1,5 +1,6 @@
 <script lang="ts">
 	import auth from "@/services/auth.svelte";
+	import autoUpdate from "@/services/autoUpdate.svelte";
 	import osInfo from "@/services/osInfo.svelte";
 	import server from "@/services/server.svelte";
 </script>
@@ -8,7 +9,18 @@
 	<div class="flex flex-col gap-1.5">
 		<div class="flex flex-col">
 			<h3 class="leading-none">App Version</h3>
-			<p class="text-muted-foreground">{osInfo.appVersion}</p>
+			<p class="text-muted-foreground">
+				{osInfo.appVersion}
+				{#if osInfo.os === "windows"}
+					<button
+						class="text-muted-foreground hover:underline"
+						onclick={async () =>
+							await autoUpdate.checkForUpdates(true)}
+					>
+						check for updates
+					</button>
+				{/if}
+			</p>
 		</div>
 		<div class="flex flex-col">
 			<h3 class="leading-none">Server Version</h3>

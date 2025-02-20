@@ -1,7 +1,7 @@
 <script>
-	import Icon from "@iconify/svelte";
 	import { page } from "$app/state";
 	import { Button } from "@/components/ui/button";
+	import { House } from "lucide-svelte";
 </script>
 
 <div class="flex w-full h-screen items-center justify-center">
@@ -14,7 +14,7 @@
 			<h2 class="text-2xl font-semibold tracking-tight">Unknown error</h2>
 		{/if}
 		<Button class="mt-2" variant="default" href="/">
-			<Icon icon="lucide:house" font-size="18px" />
+			<House size={18} />
 			Home
 		</Button>
 	</div>

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import auth from "@/services/auth.svelte";
 	import passwords from "@/services/passwords.svelte";
-	import Icon from "@iconify/svelte";
 
 	import { Button } from "@/components/ui/button";
 	import { Input } from "@/components/ui/input";
+	import { Copy, Plus, Trash2 } from "lucide-svelte";
 
 	let {
 		newTag = $bindable(),
@@ -16,14 +16,19 @@
 </script>
 
 <div class="flex flex-col gap-1">
-	<h3 class="text-xl">Tags</h3>
+	<div class="flex flex-col">
+		<h3 class="text-xl">Tags</h3>
+		{#if passwords.selectedPassword!.tags.length === 0}
+			<p class="text-muted-foreground">Empty</p>
+		{/if}
+	</div>
 	{#each passwords.selectedPassword!.tags as _, index}
 		<div class="flex flex-row items-center gap-1">
 			<Input
 				bind:value={passwords.selectedPassword!.tags[index]}
 				readonly={auth.isOfflineMode || !passwords.isEditing}
 				type="url"
-				maxlength={128}
+				maxlength={32}
 				placeholder="https://example.com"
 			/>
 			<div class="flex flex-row gap-1">
@@ -34,7 +39,7 @@
 						await copyText(passwords.selectedPassword!.tags[index]);
 					}}
 				>
-					<Icon icon="lucide:copy" font-size="20" />
+					<Copy size={20} />
 				</Button>
 				<Button
 					variant="outline"
@@ -46,36 +51,38 @@
 						? "hidden"
 						: ""}
 				>
-					<Icon icon="lucide:trash-2" font-size="20" />
+					<Trash2 size={20} />
 				</Button>
 			</div>
 		</div>
 	{/each}
-	<div class="flex flex-row items-center gap-1">
-		<Input
-			bind:value={newTag}
-			readonly={auth.isOfflineMode || !passwords.isEditing}
-			type="text"
-			maxlength={32}
-			placeholder="Social Media"
-		/>
-		<div>
-			<Button
-				variant="outline"
-				size="icon"
-				disabled={!newTag ||
-					!passwords.isEditing ||
-					auth.isOfflineMode ||
-					passwords.selectedPassword!.tags.length >= 10}
-				onclick={() => {
-					if (newTag) {
-						passwords.selectedPassword!.tags.push(newTag);
-						newTag = "";
-					}
-				}}
-			>
-				<Icon icon="lucide:plus" font-size="20" />
-			</Button>
+	{#if passwords.isEditing}
+		<div class="flex flex-row items-center gap-1">
+			<Input
+				bind:value={newTag}
+				readonly={auth.isOfflineMode || !passwords.isEditing}
+				type="text"
+				maxlength={32}
+				placeholder="Social Media"
+			/>
+			<div>
+				<Button
+					variant="outline"
+					size="icon"
+					disabled={!newTag ||
+						!passwords.isEditing ||
+						auth.isOfflineMode ||
+						passwords.selectedPassword!.tags.length >= 10}
+					onclick={() => {
+						if (newTag) {
+							passwords.selectedPassword!.tags.push(newTag);
+							newTag = "";
+						}
+					}}
+				>
+					<Plus size={20} />
+				</Button>
+			</div>
 		</div>
-	</div>
+	{/if}
 </div>

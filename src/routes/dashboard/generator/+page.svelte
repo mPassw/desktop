@@ -1,6 +1,5 @@
 <script lang="ts">
 	import * as Tabs from "$lib/components/ui/tabs";
-	import Icon from "@iconify/svelte";
 	import passwordGenerator, {
 		type HistoryItem,
 	} from "@/services/passwordGenerator.svelte";
@@ -13,6 +12,7 @@
 	import { onMount } from "svelte";
 	import { Button } from "@/components/ui/button";
 	import { toast } from "svelte-sonner";
+	import { Copy, RefreshCcw } from "lucide-svelte";
 
 	let history: HistoryItem[] = $state([]);
 
@@ -76,7 +76,7 @@
 		onclick={copyPassword}
 		class="w-full h-fit border border-input rounded-lg p-2 hover:bg-accent duration-75 relative"
 	>
-		<Icon icon="lucide:copy" class="absolute right-2 top-2 opacity-50" />
+		<Copy size={16} class="absolute right-2 top-2 opacity-50" />
 		{#each passwordGenerator.generatedPassword.split("") as char}
 			{#if passwordGenerator.NUMBERSET.includes(char)}
 				<span class="text-blue-500">{char}</span>
@@ -132,7 +132,7 @@
 				disabled={passwordGenerator.isGenerating}
 				class="mt-3"
 			>
-				<Icon icon="lucide:refresh-ccw" font-size="20" />
+				<RefreshCcw size={20} />
 				Generate
 			</Button>
 		</div>

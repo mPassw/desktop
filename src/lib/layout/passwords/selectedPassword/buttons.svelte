@@ -1,13 +1,14 @@
 <script lang="ts">
-	import * as AlertDialog from "$lib/components/ui/alert-dialog";
+	import * as Dialog from "$lib/components/ui/dialog";
 
+	import Loader from "@/components/animations/loaders/loader.svelte";
 	import auth from "@/services/auth.svelte";
 	import passwords from "@/services/passwords.svelte";
-	import Icon from "@iconify/svelte";
 	import loadersState from "@/services/loaders.svelte";
 
 	import { Button, buttonVariants } from "@/components/ui/button";
 	import { toast } from "svelte-sonner";
+	import { ArchiveRestore, Pencil, Save, Trash2 } from "lucide-svelte";
 
 	let {
 		isPageTrash,
@@ -15,9 +16,11 @@
 		isPageTrash: boolean;
 	} = $props();
 
+	let isPermanentlyDeleteDialogOpen: boolean = $state(false);
+
 	const updatePassword = async (): Promise<void> => {
 		try {
-			loadersState.isPasswordsLoaderVisible = true;
+			loadersState.isLoaderVisible = true;
 
 			if (!passwords.selectedPassword) {
 				throw new Error("No password selected");
@@ -30,13 +33,13 @@
 			console.error(err);
 			toast.error(err.message);
 		} finally {
-			loadersState.isPasswordsLoaderVisible = false;
+			loadersState.isLoaderVisible = false;
 		}
 	};
 
 	const moveToTrash = async (): Promise<void> => {
 		try {
-			loadersState.isPasswordsLoaderVisible = true;
+			loadersState.isLoaderVisible = true;
 
 			if (!passwords.selectedPassword) {
 				throw new Error("No password selected");
@@ -49,13 +52,13 @@
 			console.error(err);
 			toast.error(err.message);
 		} finally {
-			loadersState.isPasswordsLoaderVisible = false;
+			loadersState.isLoaderVisible = false;
 		}
 	};
 
 	const restore = async (): Promise<void> => {
 		try {
-			loadersState.isPasswordsLoaderVisible = true;
+			loadersState.isLoaderVisible = true;
 
 			if (!passwords.selectedPassword) {
 				throw new Error("No password selected");
@@ -68,13 +71,13 @@
 			console.error(err);
 			toast.error(err.message);
 		} finally {
-			loadersState.isPasswordsLoaderVisible = false;
+			loadersState.isLoaderVisible = false;
 		}
 	};
 
 	const permanentlyDelete = async (): Promise<void> => {
 		try {
-			loadersState.isPasswordsLoaderVisible = true;
+			loadersState.isDialogLoaderVisible = true;
 
 			if (!passwords.selectedPassword) {
 				throw new Error("No password selected");
@@ -83,11 +86,12 @@
 			await passwords.deletePassword(passwords.selectedPassword);
 
 			toast.success("Password permanently deleted");
+			isPermanentlyDeleteDialogOpen = false;
 		} catch (err: any) {
 			console.error(err);
 			toast.error(err.message);
 		} finally {
-			loadersState.isPasswordsLoaderVisible = false;
+			loadersState.isDialogLoaderVisible = false;
 		}
 	};
 </script>
@@ -97,74 +101,82 @@
 		<Button
 			variant="secondary"
 			size="sm"
-			disabled={auth.isOfflineMode ||
-				loadersState.isPasswordsLoaderVisible}
+			disabled={auth.isOfflineMode || loadersState.isSomethingLoading}
 			onclick={restore}
 		>
-			<Icon icon="lucide:archive-restore" font-size="20" />
+			<ArchiveRestore size={20} />
 			Restore
 		</Button>
-		<AlertDialog.Root>
-			<AlertDialog.Trigger
-				disabled={auth.isOfflineMode ||
-					loadersState.isPasswordsLoaderVisible}
+		<Dialog.Root bind:open={isPermanentlyDeleteDialogOpen}>
+			<Dialog.Trigger
+				disabled={auth.isOfflineMode || loadersState.isSomethingLoading}
 				class={buttonVariants({ variant: "destructive", size: "sm" })}
 			>
-				<Icon icon="lucide:trash-2" font-size="20" />
+				<Trash2 size={20} />
 				Delete
-			</AlertDialog.Trigger>
-			<AlertDialog.Content>
-				<AlertDialog.Header>
-					<AlertDialog.Title>
-						Are you absolutely sure?
-					</AlertDialog.Title>
-					<AlertDialog.Description>
+			</Dialog.Trigger>
+			<Dialog.Content
+				class="overflow-y-auto min-h-fit max-h-[90%]"
+				interactOutsideBehavior={loadersState.isDialogLoaderVisible
+					? "ignore"
+					: "close"}
+				escapeKeydownBehavior={loadersState.isDialogLoaderVisible
+					? "ignore"
+					: "close"}
+			>
+				{#if loadersState.isDialogLoaderVisible}
+					<Loader dark={true} />
+				{/if}
+				<Dialog.Header>
+					<Dialog.Title>Are you absolutely sure?</Dialog.Title>
+					<Dialog.Description>
 						This action cannot be undone. This will permanently
 						delete this password from the server
-					</AlertDialog.Description>
-				</AlertDialog.Header>
-				<AlertDialog.Footer>
-					<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
-					<AlertDialog.Action onclick={permanentlyDelete}>
-						Continue
-					</AlertDialog.Action>
-				</AlertDialog.Footer>
-			</AlertDialog.Content>
-		</AlertDialog.Root>
+					</Dialog.Description>
+				</Dialog.Header>
+				<Dialog.Footer>
+					<Dialog.Close
+						class={buttonVariants({ variant: "secondary" })}
+					>
+						Cancel
+					</Dialog.Close>
+					<Button variant="destructive" onclick={permanentlyDelete}>
+						Delete
+					</Button>
+				</Dialog.Footer>
+			</Dialog.Content>
+		</Dialog.Root>
 	{:else if passwords.isEditing}
 		<Button
 			variant="secondary"
 			size="sm"
-			disabled={auth.isOfflineMode ||
-				loadersState.isPasswordsLoaderVisible}
+			disabled={auth.isOfflineMode || loadersState.isSomethingLoading}
 			onclick={() => {
 				passwords.isEditing = false;
 			}}
 		>
-			<Icon icon="lucide:pencil" font-size="20" />
+			<Pencil size={20} />
 			Stop Editing
 		</Button>
 		<Button
 			variant="default"
 			size="sm"
-			disabled={auth.isOfflineMode ||
-				loadersState.isPasswordsLoaderVisible}
+			disabled={auth.isOfflineMode || loadersState.isSomethingLoading}
 			onclick={updatePassword}
 		>
-			<Icon icon="lucide:save" font-size="20" />
+			<Save size={20} />
 			Save
 		</Button>
 	{:else}
 		<Button
 			variant="secondary"
 			size="sm"
-			disabled={auth.isOfflineMode ||
-				loadersState.isPasswordsLoaderVisible}
+			disabled={auth.isOfflineMode || loadersState.isSomethingLoading}
 			onclick={() => {
 				passwords.isEditing = true;
 			}}
 		>
-			<Icon icon="lucide:pencil" font-size="20" />
+			<Pencil size={20} />
 			Edit
 		</Button>
 	{/if}
@@ -173,11 +185,10 @@
 		<Button
 			variant="destructive"
 			size="sm"
-			disabled={auth.isOfflineMode ||
-				loadersState.isPasswordsLoaderVisible}
+			disabled={auth.isOfflineMode || loadersState.isSomethingLoading}
 			onclick={moveToTrash}
 		>
-			<Icon icon="lucide:trash-2" font-size="20" />
+			<Trash2 size={20} />
 			Trash
 		</Button>
 	{/if}

@@ -2,10 +2,10 @@
 	import * as Avatar from "$lib/components/ui/avatar";
 	import passwords from "@/services/passwords.svelte";
 
+	import type { Password } from "@/types";
 	import { Badge } from "@/components/ui/badge";
 	import { getDomainFromUrl } from "@/utils";
 	import { GlobeLock } from "lucide-svelte";
-	import type { Password } from "@/types";
 
 	let {
 		filteredPasswords,
@@ -19,9 +19,9 @@
 <div class="flex flex-col w-1/2 overflow-auto h-fit max-h-full rounded-l-lg">
 	{#each filteredPasswords as password, index}
 		<button
-			class="flex flex-col w-full gap-1.5 p-2 hover:bg-accent duration-75 {passwords
+			class="flex flex-col w-full gap-1.5 p-2 hover:bg-accent/50 duration-75 {passwords
 				.selectedPassword?.id === password.id
-				? 'bg-accent'
+				? 'bg-accent/50'
 				: ''} {index !== filteredPasswords.length - 1
 				? 'border-b'
 				: ''}"

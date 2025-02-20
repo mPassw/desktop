@@ -1,11 +1,12 @@
 <script lang="ts">
 	import auth from "@/services/auth.svelte";
 	import passwords from "@/services/passwords.svelte";
-	import Icon from "@iconify/svelte";
 	import Search from "@/layout/passwords/search.svelte";
 	import PasswordsList from "./passwordsList.svelte";
 	import SelectedPassword from "./selectedPassword/selectedPassword.svelte";
+	import loadersState from "@/services/loaders.svelte";
 
+	import type { Password } from "@/types";
 	import { Blurfade } from "@/components/animations/blurfade";
 	import { toast } from "svelte-sonner";
 	import { Separator } from "@/components/ui/separator";
@@ -13,8 +14,7 @@
 	import { page } from "$app/state";
 	import { afterNavigate } from "$app/navigation";
 	import { Loader } from "@/components/animations/loaders";
-	import loadersState from "@/services/loaders.svelte";
-	import type { Password } from "@/types";
+	import { ListX } from "lucide-svelte";
 
 	/**
 	 * Since this component is used in two different pages, we need to check if the current page is the trash page
@@ -47,14 +47,14 @@
 
 	const fetchPasswords = async () => {
 		try {
-			loadersState.isPasswordsLoaderVisible = true;
+			loadersState.isLoaderVisible = true;
 
 			await passwords.getPasswords(isPageTrash);
 			await saveOfflineModePasswords(passwords.passwords);
 		} catch (err: any) {
 			toast.error(err.message);
 		} finally {
-			loadersState.isPasswordsLoaderVisible = false;
+			loadersState.isLoaderVisible = false;
 		}
 	};
 
@@ -96,7 +96,7 @@
 			toast.error(err.message);
 		} finally {
 			isDecrypting = false;
-			loadersState.isPasswordsLoaderVisible = false;
+			loadersState.isLoaderVisible = false;
 		}
 	});
 </script>
@@ -105,16 +105,19 @@
 	delay={0}
 	class="p-3 flex flex-col w-full h-full gap-1.5 relative overflow-x-hidden"
 >
-	{#if loadersState.isPasswordsLoaderVisible}
+	{#if loadersState.isLoaderVisible}
 		<Loader />
 	{:else}
 		{#if !auth.isOfflineMode && !auth.isVerified}
-			<p>Email not verified mate</p>
+			<p>Email not verified</p>
+		{/if}
+		{#if loadersState.isTransparentLoaderVisible}
+			<Loader />
 		{/if}
 		<Search bind:searchValue {isPageTrash} {fetchPasswords} />
 		{#if !filteredPasswords.length}
 			<div class="flex gap-1 w-full justify-center h-full items-center">
-				<Icon icon="lucide:info" font-size="24" />
+				<ListX size={24} />
 				<p class="text-center text-lg">No Passwords Found</p>
 			</div>
 		{:else}

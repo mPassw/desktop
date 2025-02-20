@@ -2,6 +2,7 @@
 	import * as Dialog from "$lib/components/ui/dialog";
 	import * as Tooltip from "$lib/components/ui/tooltip";
 
+	import Loader from "@/components/animations/loaders/loader.svelte";
 	import newPassword from "@/services/newPassword.svelte";
 	import passwordGenerator from "@/services/passwordGenerator.svelte";
 	import auth from "@/services/auth.svelte";
@@ -13,6 +14,8 @@
 	import { Textarea } from "@/components/ui/textarea";
 	import { Plus, RefreshCcw, Eye, EyeOff, Trash, Save } from "lucide-svelte";
 	import { toast } from "svelte-sonner";
+
+	let dialogTop: HTMLDivElement;
 
 	let isDialogOpen: boolean = $state(false);
 	let isLoading: boolean = $state(false);
@@ -69,8 +72,10 @@
 
 	const addPassword = async () => {
 		try {
-			loadersState.isFullscreenLoaderVisible = true;
-			isDialogOpen = false;
+			dialogTop.scrollIntoView();
+
+			loadersState.isDialogLoaderVisible = true;
+			loadersState.isTransparentLoaderVisible = true;
 
 			if (!newPassword.title.length) {
 				if (newPassword.websites.length > 0) {
@@ -92,11 +97,13 @@
 				await newPassword.getPasswordObject()
 			);
 
+			isDialogOpen = false;
 			newPassword.reset();
 		} catch (err: any) {
 			toast.error(err.message ?? "Failed to add password");
 		} finally {
-			loadersState.isFullscreenLoaderVisible = false;
+			loadersState.isDialogLoaderVisible = false;
+			loadersState.isTransparentLoaderVisible = false;
 		}
 	};
 </script>
@@ -108,7 +115,21 @@
 	>
 		<Plus />
 	</Dialog.Trigger>
-	<Dialog.Content class="overflow-y-auto min-h-72 max-h-[90%]">
+	<Dialog.Content
+		class="min-h-72 max-h-[90%] {loadersState.isDialogLoaderVisible
+			? 'overflow-hidden'
+			: 'overflow-auto'}"
+		interactOutsideBehavior={loadersState.isDialogLoaderVisible
+			? "ignore"
+			: "close"}
+		escapeKeydownBehavior={loadersState.isDialogLoaderVisible
+			? "ignore"
+			: "close"}
+	>
+		<div bind:this={dialogTop} class="absolute"></div>
+		{#if loadersState.isDialogLoaderVisible}
+			<Loader dark={true} />
+		{/if}
 		<div class="flex flex-col">
 			<p>Title</p>
 			<Input

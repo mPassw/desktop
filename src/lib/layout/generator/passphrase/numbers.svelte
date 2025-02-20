@@ -1,9 +1,9 @@
 <script lang="ts">
 	import passwordGenerator from "@/services/passwordGenerator.svelte";
-	import Icon from "@iconify/svelte";
 
 	import { Button } from "@/components/ui/button";
 	import { Slider } from "@/components/ui/slider";
+	import { Minus, Plus } from "lucide-svelte";
 
 	const numbersMin = 0;
 	let numbersMax = $derived(passwordGenerator.passphraseLength);
@@ -20,7 +20,7 @@
 				variant="ghost"
 				class="w-8 h-8"
 			>
-				<Icon icon="lucide:plus" font-size="20" />
+				<Plus size={20} />
 			</Button>
 			<p>{passwordGenerator.passphraseNumbersAmount}</p>
 			<Button
@@ -30,7 +30,7 @@
 				variant="ghost"
 				class="w-8 h-8"
 			>
-				<Icon icon="lucide:minus" font-size="20" />
+				<Minus size={20} />
 			</Button>
 		</div>
 	</div>

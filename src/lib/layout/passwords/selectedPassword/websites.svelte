@@ -1,10 +1,10 @@
 <script lang="ts">
 	import auth from "@/services/auth.svelte";
 	import passwords from "@/services/passwords.svelte";
-	import Icon from "@iconify/svelte";
 
 	import { Button } from "@/components/ui/button";
 	import { Input } from "@/components/ui/input";
+	import { Copy, ExternalLink, Plus, Trash2 } from "lucide-svelte";
 
 	let {
 		newWebsite = $bindable(),
@@ -18,7 +18,12 @@
 </script>
 
 <div class="flex flex-col gap-1">
-	<h3 class="text-xl">Websites</h3>
+	<div class="flex flex-col">
+		<h3 class="text-xl">Websites</h3>
+		{#if passwords.selectedPassword!.websites.length === 0}
+			<p class="text-muted-foreground">Empty</p>
+		{/if}
+	</div>
 	{#each passwords.selectedPassword!.websites as _, index}
 		<div class="flex flex-row items-center gap-1">
 			<Input
@@ -38,7 +43,7 @@
 						);
 					}}
 				>
-					<Icon icon="lucide:external-link" font-size="20" />
+					<ExternalLink size={20} />
 				</Button>
 				<Button
 					variant="outline"
@@ -49,7 +54,7 @@
 						);
 					}}
 				>
-					<Icon icon="lucide:copy" font-size="20" />
+					<Copy size={20} />
 				</Button>
 				<Button
 					variant="outline"
@@ -61,36 +66,40 @@
 						? "hidden"
 						: ""}
 				>
-					<Icon icon="lucide:trash-2" font-size="20" />
+					<Trash2 size={20} />
 				</Button>
 			</div>
 		</div>
 	{/each}
-	<div class="flex flex-row items-center gap-1">
-		<Input
-			bind:value={newWebsite}
-			readonly={auth.isOfflineMode || !passwords.isEditing}
-			type="text"
-			maxlength={128}
-			placeholder="https://example.com"
-		/>
-		<div>
-			<Button
-				variant="outline"
-				size="icon"
-				disabled={!newWebsite ||
-					!passwords.isEditing ||
-					auth.isOfflineMode ||
-					passwords.selectedPassword!.websites.length >= 10}
-				onclick={() => {
-					if (newWebsite) {
-						passwords.selectedPassword!.websites.push(newWebsite);
-						newWebsite = "";
-					}
-				}}
-			>
-				<Icon icon="lucide:plus" font-size="20" />
-			</Button>
+	{#if passwords.isEditing}
+		<div class="flex flex-row items-center gap-1">
+			<Input
+				bind:value={newWebsite}
+				readonly={auth.isOfflineMode || !passwords.isEditing}
+				type="text"
+				maxlength={128}
+				placeholder="https://example.com"
+			/>
+			<div>
+				<Button
+					variant="outline"
+					size="icon"
+					disabled={!newWebsite ||
+						!passwords.isEditing ||
+						auth.isOfflineMode ||
+						passwords.selectedPassword!.websites.length >= 10}
+					onclick={() => {
+						if (newWebsite) {
+							passwords.selectedPassword!.websites.push(
+								newWebsite
+							);
+							newWebsite = "";
+						}
+					}}
+				>
+					<Plus size={20} />
+				</Button>
+			</div>
 		</div>
-	</div>
+	{/if}
 </div>

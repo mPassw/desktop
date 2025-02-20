@@ -19,13 +19,13 @@
 
 	const updateSmtpSettings = async () => {
 		try {
-			loadersState.isAdminPageTransparentLoaderVisible = true;
+			loadersState.isTransparentLoaderVisible = true;
 
 			await admin.updateSmtpSettings();
 		} catch (err: any) {
 			toast.error(err.message ?? "Unknown error");
 		} finally {
-			loadersState.isAdminPageTransparentLoaderVisible = false;
+			loadersState.isTransparentLoaderVisible = false;
 		}
 	};
 
@@ -150,12 +150,12 @@
 						? "ignore"
 						: "close"}
 				>
-					<Dialog.Header>
-						<Dialog.Title>Send test email</Dialog.Title>
-					</Dialog.Header>
 					{#if loadersState.isDialogLoaderVisible}
 						<Loader dark={true} />
 					{/if}
+					<Dialog.Header>
+						<Dialog.Title>Send test email</Dialog.Title>
+					</Dialog.Header>
 					<div class="flex flex-col gap-1 select-none">
 						<Label for="smtp-Recipient">Recipient email</Label>
 						<Input

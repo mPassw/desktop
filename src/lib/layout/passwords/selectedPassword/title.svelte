@@ -1,10 +1,10 @@
 <script lang="ts">
 	import auth from "@/services/auth.svelte";
 	import passwords from "@/services/passwords.svelte";
-	import Icon from "@iconify/svelte";
 
 	import { Button } from "@/components/ui/button";
 	import { Input } from "@/components/ui/input";
+	import { Copy } from "lucide-svelte";
 
 	let {
 		copyText,
@@ -31,7 +31,7 @@
 						await copyText(passwords.selectedPassword!.title);
 					}}
 				>
-					<Icon icon="lucide:copy" font-size="20" />
+					<Copy size={20} />
 				</Button>
 			</div>
 		</div>

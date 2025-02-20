@@ -5,12 +5,12 @@
 	import ServerValidation from "@/layout/root/serverValidation.svelte";
 	import auth from "@/services/auth.svelte";
 	import preferences from "@/services/preferences.svelte";
-	import Icon from "@iconify/svelte";
 	import server from "@/services/server.svelte";
 
 	import { Button } from "@/components/ui/button";
 	import { toggleMode } from "mode-watcher";
 	import { onMount } from "svelte";
+	import { Moon } from "lucide-svelte";
 
 	const loadPreferences = async () => {
 		auth.email = (await preferences.getUserEmail()) ?? "";
@@ -45,6 +45,6 @@
 		size="icon"
 		onclick={toggleMode}
 	>
-		<Icon icon="lucide:moon" font-size="24" />
+		<Moon size={24} />
 	</Button>
 </div>

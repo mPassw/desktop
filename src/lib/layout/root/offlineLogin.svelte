@@ -19,7 +19,10 @@
 			loadersState.isFullscreenLoaderVisible = true;
 
 			const { encryptionKey, salt } = await getOfflineModeData();
-			await calculateEncryptionKey(password, salt);
+			passwords.encryptionKey = await calculateEncryptionKey(
+				password,
+				salt
+			);
 			password = "";
 
 			if (

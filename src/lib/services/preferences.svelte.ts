@@ -1,6 +1,6 @@
-import type { Password } from "@/types";
 import auth from "./auth.svelte";
 
+import type { Password } from "@/types";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { load, Store } from "@tauri-apps/plugin-store";
 

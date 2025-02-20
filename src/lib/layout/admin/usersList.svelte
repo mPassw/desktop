@@ -44,7 +44,7 @@
 	{#each admin.users as user, index}
 		<Dialog.Root>
 			<Dialog.Trigger
-				class="p-2 w-full hover:bg-accent duration-75 {index !==
+				class="p-2 w-full hover:bg-accent/50 duration-75 {index !==
 				admin.users.length - 1
 					? 'border-b border-accent'
 					: ''}"
