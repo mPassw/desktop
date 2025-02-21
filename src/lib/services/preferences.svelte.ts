@@ -5,6 +5,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { load, Store } from "@tauri-apps/plugin-store";
 
 class Preferences {
+	public enableAnimations: boolean = $state(true);
 	public windowDecorations: "off" | "system" | "custom" = $state("system");
 	public windowDecorationsSide: "left" | "right" = $state("right"); // only used when windowDecorations is set to custom
 
@@ -17,6 +18,22 @@ class Preferences {
 		await store.set(key, value);
 		await store.save();
 	};
+
+	/**
+	 * Load animations settings. This should be called first
+	 */
+	public loadAnimationsSettings = async (): Promise<void> => {
+		this.enableAnimations =
+			((await (
+				await this._loadPreferences()
+			).get("enableAnimations")) as boolean) ?? true;
+	};
+
+	/**
+	 * Set the animations settings
+	 */
+	public setAnimationsSettings = async (value: boolean): Promise<void> =>
+		await this._setValue("enableAnimations", value);
 
 	/**
 	 * Set the server URL, so that the user doesn't have to type it in every time
@@ -141,7 +158,8 @@ class Preferences {
 		(await (await this._loadPreferences()).get("offlineModePasswords")) ||
 		[];
 
-	public deleteOfflineModePasswords = async () => {};
+	public deleteOfflineModePasswords = async (): Promise<void> =>
+		await this._setValue("offlineModePasswords", []);
 }
 
 const preferences = new Preferences();

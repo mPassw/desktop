@@ -2,6 +2,7 @@
 	import Decorations from "@/layout/settings/decorations.svelte";
 	import Theme from "@/layout/settings/theme.svelte";
 	import OsInfo from "@/layout/settings/osInfo.svelte";
+	import Animations from "@/layout/settings/animations.svelte";
 	import SessionLength from "@/layout/settings/sessionLength.svelte";
 
 	import { Blurfade } from "@/components/animations/blurfade";
@@ -16,6 +17,7 @@
 		<Separator />
 		<div class="flex flex-col w-full gap-1.5">
 			<h2 class="text-xl">Other</h2>
+			<Animations />
 			<SessionLength />
 		</div>
 		<Separator />

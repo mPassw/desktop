@@ -16,10 +16,9 @@ class ExportService {
 	public decryptedPasswords: Password[] = $state([]);
 
 	public currentExportType: "csv" | "json" = $state("json");
-	public currentExportStatus: string = $state("");
 
 	public export = async () => {
-		this.currentExportStatus = "Decrtypting passwords...";
+		this.decryptedPasswords = [];
 
 		for (const password of passwords.passwords) {
 			const tempPassword = {
@@ -51,6 +50,8 @@ class ExportService {
 		await file.write(new TextEncoder().encode(content));
 		await file.close();
 
+		this.decryptedPasswords = [];
+
 		await revealItemInDir(
 			(await path.appDataDir()) + "/exports/" + fileName
 		);
@@ -69,6 +70,7 @@ class ExportService {
 	private _convertToCSV = (passwords: Password[]): string => {
 		const headers = [
 			"id",
+            "inTrash",
 			"title",
 			"username",
 			"password",
@@ -82,6 +84,7 @@ class ExportService {
 		for (const pass of passwords) {
 			const row = [
 				this._escapeCSV(pass.id.toString()),
+                this._escapeCSV(pass.inTrash.toString()),
 				this._escapeCSV(pass.title),
 				this._escapeCSV(pass.username),
 				this._escapeCSV(pass.password),

@@ -20,12 +20,7 @@
 	let { children } = $props();
 
 	onMount(async () => {
-		osInfo.os = type();
-		osInfo.version = version();
-		osInfo.arch = arch();
-		osInfo.hostname = (await hostname()) ?? "unknown";
-		osInfo.appVersion = await getVersion();
-		await autoUpdate.checkForUpdates();
+		await preferences.loadAnimationsSettings();
 
 		await preferences.setWindowDecorations(
 			(await preferences.getWindowDecorations()) ?? "system"
@@ -34,7 +29,15 @@
 			(await preferences.getWindowsDecorationsSide()) ?? "right"
 		);
 
+		osInfo.os = type();
+		osInfo.version = version();
+		osInfo.arch = arch();
+		osInfo.hostname = (await hostname()) ?? "unknown";
+		osInfo.appVersion = await getVersion();
+
 		auth.sessionLength = await preferences.getSessionLength();
+
+		await autoUpdate.checkForUpdates();
 	});
 </script>
 

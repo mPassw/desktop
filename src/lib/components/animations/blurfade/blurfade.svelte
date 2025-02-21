@@ -1,7 +1,10 @@
 <script lang="ts">
-	import { Motion, AnimatePresence, useAnimation } from "svelte-motion";
+	import preferences from "@/services/preferences.svelte";
+
+	import { Motion, AnimatePresence } from "svelte-motion";
 	import { inview } from "svelte-inview";
 	import { cn } from "$lib/utils";
+
 	export let duration = 0.4;
 	export let delay = 0;
 	export let yOffset = 6;
@@ -19,28 +22,37 @@
 	export { className as class };
 </script>
 
-<AnimatePresence let:item list={[{ key: id }]}>
-	<Motion
-		initial="hidden"
-		animate={isInView}
-		exit="hidden"
-		variants={defaultVariants}
-		transition={{
-			delay: 0.04 + delay,
-			duration,
-			ease: "easeOut",
-		}}
-		let:motion
-	>
-		<div
-			use:inview={{ rootMargin: inViewMargin, unobserveOnEnter: once }}
-			use:motion
-			on:inview_change={({ detail }) => {
-				isInView = detail.inView ? "visible" : "hidden";
+{#if preferences.enableAnimations}
+	<AnimatePresence let:item list={[{ key: id }]}>
+		<Motion
+			initial="hidden"
+			animate={isInView}
+			exit="hidden"
+			variants={defaultVariants}
+			transition={{
+				delay: 0.04 + delay,
+				duration,
+				ease: "easeOut",
 			}}
-			class={cn(className)}
+			let:motion
 		>
-			<slot>Default</slot>
-		</div>
-	</Motion>
-</AnimatePresence>
+			<div
+				use:inview={{
+					rootMargin: inViewMargin,
+					unobserveOnEnter: once,
+				}}
+				use:motion
+				on:inview_change={({ detail }) => {
+					isInView = detail.inView ? "visible" : "hidden";
+				}}
+				class={cn(className)}
+			>
+				<slot>Default</slot>
+			</div>
+		</Motion>
+	</AnimatePresence>
+{:else}
+	<div class={cn(className)}>
+		<slot>Default</slot>
+	</div>
+{/if}

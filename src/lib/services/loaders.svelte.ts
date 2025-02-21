@@ -7,7 +7,12 @@ class LoadersState {
 	/**
 	 * Helper to check if any loader is visible
 	 */
-	public isSomethingLoading: boolean = $state(false);
+	public isSomethingLoading: boolean = $derived(
+		this.isFullscreenLoaderVisible ||
+			this.isDialogLoaderVisible ||
+			this.isLoaderVisible ||
+			this.isTransparentLoaderVisible
+	);
 }
 
 const loadersState = new LoadersState();

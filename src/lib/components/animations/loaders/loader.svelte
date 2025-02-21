@@ -1,5 +1,7 @@
 <script lang="ts">
 	import MPassLoader from "@/assets/mPassLoader.svelte";
+	import preferences from "@/services/preferences.svelte";
+
 	import { blur } from "svelte/transition";
 
 	let {
@@ -16,7 +18,7 @@
 </script>
 
 <div
-	transition:blur={{ duration: 200 }}
+	transition:blur={{ duration: preferences.enableAnimations ? 200 : 0 }}
 	class="flex flex-col justify-center items-center h-full z-50 absolute inset-0 {dark
 		? 'bg-black/50'
 		: ''}"
