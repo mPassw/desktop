@@ -18,6 +18,7 @@
 		Wrench,
 	} from "lucide-svelte";
 	import autoUpdate from "@/services/autoUpdate.svelte";
+	import { Badge } from "../badge";
 
 	const navigation = [
 		{
@@ -47,6 +48,8 @@
 			icon: User,
 			path: "/dashboard/my-account",
 			disabled: auth.isOfflineMode,
+			badge: "!",
+			badgeCondition: !authState.isVerified,
 		},
 	];
 </script>
@@ -75,6 +78,11 @@
 					<span>
 						{item.title}
 					</span>
+					{#if item.badge && item.badgeCondition}
+						<Badge variant="secondary">
+							{item.badge}
+						</Badge>
+					{/if}
 				</Button>
 			</div>
 		{/each}

@@ -16,7 +16,11 @@ pub fn run() {
             commands::encryption::encrypt_string,
             commands::encryption::decrypt_string,
             commands::offline_mode::save_offline_mode_keys,
-            commands::offline_mode::get_offline_mode_keys
+            commands::offline_mode::get_offline_mode_keys,
+            commands::srp::generate_salt,
+            commands::srp::generate_verifier,
+            commands::srp::generate_srp_credentials,
+            commands::srp::calculate_srp_proof,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

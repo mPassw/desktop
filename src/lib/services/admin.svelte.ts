@@ -30,7 +30,7 @@ class AdminState {
 		this.smtpUsername = data.username ?? "";
 		this.smtpPassword = data.password ?? "";
 		this.smtpSender = data.sender ?? "";
-		this.smtpSsl = data.ssl ?? false;
+		this.smtpSsl = data.enableSsl ?? false;
 	};
 
 	/**
@@ -45,7 +45,7 @@ class AdminState {
 				username: this.smtpUsername,
 				password: this.smtpPassword,
 				sender: this.smtpSender,
-				ssl: this.smtpSsl,
+				enableSsl: this.smtpSsl,
 			}),
 		});
 	};
@@ -75,7 +75,7 @@ class AdminState {
 	/**
 	 * Toggle user verification status
 	 */
-	public toggleUserVerification = async (id: number): Promise<void> => {
+	public toggleUserVerification = async (id: string): Promise<void> => {
 		await makeRequest(`/users/${id}/verification`, "PATCH", {
 			authorization: true,
 		});
@@ -89,7 +89,7 @@ class AdminState {
 	/**
 	 * Toggle user admin status
 	 */
-	public toggleUserAdminStatus = async (id: number): Promise<void> => {
+	public toggleUserAdminStatus = async (id: string): Promise<void> => {
 		await makeRequest(`/users/${id}/admin`, "PATCH", {
 			authorization: true,
 		});

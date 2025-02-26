@@ -11,25 +11,19 @@
 	import { toast } from "svelte-sonner";
 	import { Separator } from "@/components/ui/separator";
 	import { saveOfflineModePasswords } from "@/offlineMode/offlineMode.svelte";
-	import { page } from "$app/state";
 	import { afterNavigate } from "$app/navigation";
 	import { Loader } from "@/components/animations/loaders";
 	import { ListX } from "lucide-svelte";
 
-	/**
-	 * Since this component is used in two different pages, we need to check if the current page is the trash page
-	 * because some features are not available in the trash page
-	 */
-	let isPageTrash: boolean = $derived(
-		page.url.pathname === "/dashboard/trash"
-	);
 	let isDecrypting: boolean = $state(true);
 	let searchValue: string = $state("");
 
 	let filteredPasswords: Password[] = $derived(
 		passwords.passwords.filter((password) => {
 			return (
-				(isPageTrash ? password.inTrash : !password.inTrash) &&
+				(passwords.isPageTrash
+					? password.inTrash
+					: !password.inTrash) &&
 				(password.title
 					.toLowerCase()
 					.includes(searchValue.toLowerCase()) ||
@@ -49,7 +43,7 @@
 		try {
 			loadersState.isLoaderVisible = true;
 
-			await passwords.getPasswords(isPageTrash);
+			await passwords.getPasswords(passwords.isPageTrash);
 			await saveOfflineModePasswords(passwords.passwords);
 		} catch (err: any) {
 			toast.error(err.message);
@@ -79,7 +73,7 @@
 
 			let passwordToSelect: Password | null = null;
 
-			if (isPageTrash) {
+			if (passwords.isPageTrash) {
 				passwordToSelect =
 					passwords.passwords.find((password) => password.inTrash) ??
 					null;
@@ -108,13 +102,14 @@
 	{#if loadersState.isLoaderVisible}
 		<Loader />
 	{:else}
-		{#if !auth.isOfflineMode && !auth.isVerified}
-			<p>Email not verified</p>
-		{/if}
 		{#if loadersState.isTransparentLoaderVisible}
 			<Loader />
 		{/if}
-		<Search bind:searchValue {isPageTrash} {fetchPasswords} />
+		<Search
+			bind:searchValue
+			isPageTrash={passwords.isPageTrash}
+			{fetchPasswords}
+		/>
 		{#if !filteredPasswords.length}
 			<div class="flex gap-1 w-full justify-center h-full items-center">
 				<ListX size={24} />
@@ -124,7 +119,10 @@
 			<div class="flex flex-row w-full h-full mt-12 overflow-auto">
 				<PasswordsList {filteredPasswords} {changeSelectedPassword} />
 				<Separator orientation="vertical" />
-				<SelectedPassword bind:isDecrypting {isPageTrash} />
+				<SelectedPassword
+					bind:isDecrypting
+					isPageTrash={passwords.isPageTrash}
+				/>
 			</div>
 		{/if}
 	{/if}

@@ -14,10 +14,12 @@ export function cn(...inputs: ClassValue[]) {
  * Get error message from server response
  */
 export const getErrorMessage = (error: any): string => {
-	if (typeof error === "string") return error;
-	if (error?.message) {
-		if (Array.isArray(error.message)) return error.message[0];
-		if (typeof error.message === "string") return error.message;
+	console.log(error);
+	if (typeof error === "string") {
+		return error;
+	}
+	if (error.title) {
+		return error.title;
 	}
 	return "Unknown error";
 };
@@ -40,14 +42,15 @@ export const makeRequest = async (
 			method,
 			headers: {
 				"Content-Type": "application/json",
-				authorization: authorization ? `Bearer ${auth.authToken}` : "",
+				Authorization: authorization ? `Bearer ${auth.authToken}` : "",
 			},
 			body,
 		});
 
 		if (!res.ok) {
-			const errorData = await res.json();
-			throw new Error(getErrorMessage(errorData));
+			const errorText = await res.text();
+			const errorObj = JSON.parse(errorText);
+			throw new Error(getErrorMessage(errorObj));
 		}
 
 		return res;
@@ -60,7 +63,7 @@ export const makeRequest = async (
 				"Cannot connect to server. Please check your connection."
 			);
 		}
-		throw new Error(err.message);
+		throw new Error(err.message ?? "Unknown error");
 	}
 };
 

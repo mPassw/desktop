@@ -16,6 +16,7 @@
 	import { arch, hostname, type, version } from "@tauri-apps/plugin-os";
 	import { getVersion } from "@tauri-apps/api/app";
 	import { FullScreenLoader } from "@/components/animations/loaders";
+	import EmailVerificationDialog from "@/layout/my-account/emailVerificationDialog.svelte";
 
 	let { children } = $props();
 
@@ -45,6 +46,7 @@
 <Toaster richColors class="select-none" />
 <FullScreenLoader />
 <UpdateDialog />
+<EmailVerificationDialog />
 
 {#if process.env.NODE_ENV === "development"}
 	<p

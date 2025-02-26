@@ -26,7 +26,6 @@
 		"buffer": "^6.0.3",
 		"svelte-inview": "^4.0.4",
 		"svelte-motion": "^0.12.2",
-		"tssrp6a": "^3.0.0",
 		"uuid": "^11.0.5"
 	},
 	"devDependencies": {

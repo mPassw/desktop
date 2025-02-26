@@ -23,12 +23,14 @@ class AuthState {
 	public isAdmin: boolean = $state(false);
 	public isVerified: boolean = $state(false);
 
-	public id: number = $state(0);
+	public id: string = $state("");
 	public email: string = $state("");
 	public username: string = $state("");
 
 	public createdAt: string = $state("");
 	public updatedAt: string = $state("");
+
+	public isEmailVerificationDialogOpen: boolean = $state(false);
 
 	/**
 	 * This is just a helper to check if the user is in offline mode
@@ -50,55 +52,65 @@ class AuthState {
 		}, timeLeft);
 	};
 
-	public updateUser = async (
-		newEmail: string | null,
-		newUsername: string | null,
-		salt: bigint | null,
-		verifier: bigint | null,
-		updatePasswords: boolean = false
+	private updateUser = async (
+		newEmail?: string,
+		newUsername?: string,
+		salt?: string,
+		verifier?: string
 	) => {
 		await makeRequest("/users/@me", "PATCH", {
 			authorization: true,
 			body: JSON.stringify({
-				email: newEmail,
-				username: newUsername,
-				salt: salt ? salt.toString(16) : null,
-				verifier: verifier ? verifier.toString(16) : null,
-				passwords: updatePasswords
-					? passwords.passwords.map((p) => ({
-							id: p.id,
-							title: p.title,
-							username: p.username,
-							password: p.password,
-							note: p.note,
-							websites: p.websites,
-							tags: p.tags,
-							inTrash: p.inTrash,
-					  }))
-					: null,
+				email: newEmail ? newEmail : null,
+				username: newUsername ? newUsername : null,
+				salt: salt ? salt : null,
+				verifier: verifier ? verifier : null,
+				passwords:
+					newEmail?.length || salt?.length || verifier?.length
+						? passwords.passwords.map((p) => ({
+								id: p.id,
+								title: p.title,
+								username: p.username,
+								password: p.password,
+								note: p.note,
+								websites: p.websites,
+								tags: p.tags,
+								inTrash: p.inTrash,
+						  }))
+						: null,
 			}),
 		});
 	};
 
-	public updateEmail = async (newEmail: string, masterPassword: string) => {
-		await passwords.decryptAllPasswords();
+	public updateData = async (
+		masterPassword: string,
+		newEmail?: string,
+		newUsername?: string,
+		newPassword?: string
+	) => {
+		let salt: string | undefined;
+		let verifier: string | undefined;
 
-		for (const pwd of passwords.passwords) {
-			console.log(pwd.username ?? pwd.password);
+		if (newEmail || newPassword) {
+			await passwords.decryptAllPasswords();
+
+			const saltAndVerifier = await generateSaltAndVerifier(
+				newEmail?.length ? newEmail : this.email,
+				newPassword?.length ? newPassword : masterPassword
+			);
+
+			salt = saltAndVerifier.salt;
+			verifier = saltAndVerifier.verifier;
+
+			passwords.encryptionKey = await calculateEncryptionKey(
+				newPassword?.trim().length ? newPassword : masterPassword,
+				salt
+			);
+
+			await passwords.encryptAllPasswords();
 		}
 
-		const { salt, verifier } = await generateSaltAndVerifier(
-			newEmail,
-			masterPassword
-		);
-		passwords.encryptionKey = await calculateEncryptionKey(
-			masterPassword,
-			salt.toString(16)
-		);
-
-		await passwords.encryptAllPasswords();
-
-		await this.updateUser(newEmail, null, salt, verifier, true);
+		await this.updateUser(newEmail, newUsername, salt, verifier);
 	};
 
 	public logOut = async () => {

@@ -6,10 +6,14 @@ import { makeRequest } from "@/utils";
 import { invoke } from "@tauri-apps/api/core";
 import { getOfflineModePasswords } from "@/offlineMode/offlineMode.svelte";
 import { calculateEncryptionKey } from "@/auth/login.svelte";
+import { page } from "$app/state";
 
 class PasswordsState {
 	public encryptionKey: Uint8Array = $state(new Uint8Array(0));
 	public passwords: Password[] = $state([]);
+	public isPageTrash: boolean = $derived(
+		page.url.pathname === "/dashboard/trash"
+	);
 
 	public selectedPassword: Password | null = $state(null);
 	public isEditing: boolean = $state(false);
@@ -88,9 +92,10 @@ class PasswordsState {
 
 		password = await this.encryptPassword(password);
 
-		await makeRequest(`/passwords/${password.id}`, "PATCH", {
+		const res = await makeRequest(`/passwords`, "PATCH", {
 			authorization: true,
 			body: JSON.stringify({
+				id: password.id,
 				title: password.title,
 				username:
 					password.username && password.username.length
@@ -110,7 +115,29 @@ class PasswordsState {
 			}),
 		});
 
-		await this.getPasswords();
+		// Use returned password list from server
+		this.passwords = await res.json();
+
+		// Select the updated password if visible in current view
+		const updatedPassword = this.passwords.find(
+			(p) => p.id === password.id && p.inTrash === this.isPageTrash
+		);
+		if (updatedPassword) {
+			await this.setSelectedPassword(updatedPassword);
+		} else {
+			// If the updated password is not visible in current view (e.g., moved to trash)
+			// select another appropriate password
+			const visiblePassword = this.passwords.find(
+				(p) => p.inTrash === this.isPageTrash
+			);
+			if (visiblePassword) {
+				await this.setSelectedPassword(visiblePassword);
+			} else {
+				this.selectedPassword = null;
+			}
+		}
+
+		await preferences.saveOfflineModePasswords(this.passwords);
 	};
 
 	/**
@@ -141,11 +168,28 @@ class PasswordsState {
 	 * Permanently delete password
 	 */
 	public deletePassword = async (password: Password): Promise<void> => {
-		await makeRequest(`/passwords/${password.id}`, "DELETE", {
+		const res = await makeRequest(`/passwords/${password.id}`, "DELETE", {
 			authorization: true,
 		});
 
-		await this.getPasswords(true);
+		// Use returned password list from server
+		this.passwords = await res.json();
+
+		// Select a password appropriate for the current view
+		if (this.passwords.length) {
+			const visiblePassword = this.passwords.find(
+				(p) => p.inTrash === this.isPageTrash
+			);
+			if (visiblePassword) {
+				await this.setSelectedPassword(visiblePassword);
+			} else {
+				this.selectedPassword = null;
+			}
+		} else {
+			this.selectedPassword = null;
+		}
+
+		await preferences.saveOfflineModePasswords(this.passwords);
 	};
 
 	public addNewPassword = async (password: Password): Promise<void> => {
@@ -281,14 +325,14 @@ class PasswordsState {
 	};
 
 	public encryptAllPasswords = async () => {
-		for (const password of this.passwords) {
-			await this.encryptPassword(password);
+		for (let i = 0; i < this.passwords.length; i++) {
+			this.passwords[i] = await this.encryptPassword(this.passwords[i]);
 		}
 	};
 
 	public decryptAllPasswords = async () => {
-		for (const password of this.passwords) {
-			await this.decryptPassword(password);
+		for (let i = 0; i < this.passwords.length; i++) {
+			this.passwords[i] = await this.decryptPassword(this.passwords[i]);
 		}
 	};
 }

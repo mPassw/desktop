@@ -122,7 +122,7 @@ class PasswordGenerator {
 		const store = await this._getStore();
 		const history = await this._getHistory();
 
-		await store.set("history", [item, ...history].slice(0, 50));
+		await store.set("history", [item, ...history].slice(0, 100));
 		await store.save();
 	};
 

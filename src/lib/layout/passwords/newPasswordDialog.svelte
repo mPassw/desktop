@@ -111,7 +111,7 @@
 <Dialog.Root bind:open={isDialogOpen}>
 	<Dialog.Trigger
 		class={buttonVariants({ variant: "outline", size: "icon" })}
-		disabled={auth.isOfflineMode}
+		disabled={auth.isOfflineMode || !auth.isVerified}
 	>
 		<Plus />
 	</Dialog.Trigger>

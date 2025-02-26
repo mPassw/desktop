@@ -2404,12 +2404,15 @@ dependencies = [
  "base64 0.22.1",
  "chacha",
  "chacha20poly1305",
+ "digest",
  "hex",
  "keyring",
  "num-bigint",
+ "num-traits",
  "rand 0.9.0",
  "serde",
  "serde_json",
+ "sha2",
  "tauri",
  "tauri-build",
  "tauri-plugin-fs",
@@ -2519,6 +2522,7 @@ checksum = "a5e44f723f1133c9deac646763579fdb3ac745e418f2a7af9cd0c431da1f20b9"
 dependencies = [
  "num-integer",
  "num-traits",
+ "rand 0.8.5",
 ]
 
 [[package]]

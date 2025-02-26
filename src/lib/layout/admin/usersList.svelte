@@ -11,7 +11,7 @@
 	import { toast } from "svelte-sonner";
 	import { Badge } from "@/components/ui/badge";
 
-	const toggleUserVerification = async (id: number) => {
+	const toggleUserVerification = async (id: string) => {
 		try {
 			loadersState.isDialogLoaderVisible = true;
 
@@ -23,7 +23,7 @@
 		}
 	};
 
-	const toggleUserAdminStatus = async (id: number) => {
+	const toggleUserAdminStatus = async (id: string) => {
 		try {
 			loadersState.isDialogLoaderVisible = true;
 

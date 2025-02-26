@@ -1,5 +1,4 @@
 import auth from "@/services/auth.svelte";
-import passwords from "@/services/passwords.svelte";
 
 import type { Step1Response, Step2Response } from "@/types";
 import { makeRequest } from "@/utils";
@@ -27,8 +26,8 @@ export const step2 = async (
 	const res = await makeRequest("/auth/step2", "POST", {
 		body: JSON.stringify({
 			authId,
-			A,
-			M1,
+			a: A,
+			m1: M1,
 			expiresIn: auth.sessionLength,
 		}),
 	});

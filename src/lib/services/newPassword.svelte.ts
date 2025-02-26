@@ -17,7 +17,7 @@ class NewPassword {
 
 	public getPasswordObject = async (): Promise<Password> => {
 		const password: Password = {
-			id: 0,
+			id: "",
 			inTrash: false,
 			title: this.title,
 			username: this.username.length ? this.username : null,

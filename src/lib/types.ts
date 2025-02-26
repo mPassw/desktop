@@ -6,14 +6,14 @@ export interface Step1Response {
 	email: string;
 	username: string | null;
 	salt: string;
-	B: string;
+	b: string;
 }
 
 /**
  * Auth response 2
  */
 export interface Step2Response {
-	M2: string;
+	m2: string;
 	token: string;
 }
 
@@ -22,11 +22,11 @@ export interface SMTPSettings {
 	port: number | null;
 	username: string | null;
 	password: string | null;
-	ssl: boolean | null;
+	enableSsl: boolean | null;
 }
 
 export interface User {
-	id: number;
+	id: string;
 	email: string;
 	username: string | null;
 	verified: boolean;
@@ -36,7 +36,7 @@ export interface User {
 }
 
 export interface Password {
-	id: number;
+	id: string;
 	inTrash: boolean;
 	title: string;
 	username: string | null;

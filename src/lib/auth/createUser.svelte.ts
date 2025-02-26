@@ -1,5 +1,5 @@
 import { getErrorMessage, makeRequest } from "@/utils";
-import { createVerifierAndSalt, SRPParameters, SRPRoutines } from "tssrp6a";
+import { invoke } from "@tauri-apps/api/core";
 
 export const createUser = async (
 	email: string,
@@ -11,9 +11,9 @@ export const createUser = async (
 	const res = await makeRequest("/users", "POST", {
 		body: JSON.stringify({
 			email: email,
-			username: username,
-			salt: salt.toString(16),
-			verifier: verifier.toString(16),
+			username: username.length ? username : null,
+			salt: salt,
+			verifier: verifier,
 		}),
 	});
 
@@ -25,16 +25,16 @@ export const createUser = async (
 export const generateSaltAndVerifier = async (
 	email: string,
 	password: string
-): Promise<{ salt: bigint; verifier: bigint }> => {
-	const { s: salt, v: verifier } = await createVerifierAndSalt(
-		new SRPRoutines(new SRPParameters()),
-		email,
-		password,
-		16
-	);
+): Promise<{ salt: string; verifier: string }> => {
+	const salt = await invoke<string>("generate_salt");
+	const verifier = await invoke<string>("generate_verifier", {
+		username: email,
+		password: password,
+		salt: salt,
+	});
 
 	return {
-		salt,
-		verifier,
+		salt: salt,
+		verifier: verifier,
 	};
 };

@@ -23,7 +23,7 @@ hex = "0.4.3"
 base64 = "0.22.1"
 tauri-plugin-http = "2"
 tauri-plugin-os = "2"
-num-bigint = "0.4.6"
+num-bigint = { version = "0.4.6", features = ["rand"] }
 rand = "0.9.0"
 chacha = "0.4.0"
 tokio = { version = "1.43.0", features = ["full"] }
@@ -31,6 +31,9 @@ keyring = { version = "3.6.1", features = ["apple-native", "windows-native", "sy
 chacha20poly1305 = { version = "0.10.1", features = ["alloc"] }
 tauri-plugin-process = "2"
 tauri-plugin-fs = "2"
+digest = "0.10.7"
+num-traits = "0.2.19"
+sha2 = "0.10.8"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-updater = "2"

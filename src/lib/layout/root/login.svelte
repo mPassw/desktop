@@ -10,11 +10,10 @@
 	import { Input } from "@/components/ui/input";
 	import { toast } from "svelte-sonner";
 	import { calculateEncryptionKey, step1, step2 } from "@/auth/login.svelte";
-	import { SRPClientSession, SRPParameters, SRPRoutines } from "tssrp6a";
 	import { goto } from "$app/navigation";
 	import { getMe } from "@/auth/getMe.svelte";
 	import { saveOfflineModeData } from "@/offlineMode/offlineMode.svelte";
-	import { hexToBigInt } from "@/utils";
+	import { invoke } from "@tauri-apps/api/core";
 
 	let authId: string | undefined = $state(undefined);
 	let email: string = $state(auth.email);
@@ -37,23 +36,20 @@
 			email = step1Response.email;
 			auth.salt = step1Response.salt;
 
-			const srpClient = new SRPClientSession(
-				new SRPRoutines(new SRPParameters())
-			);
+			const { private_key, public_key } = await invoke<{
+				private_key: string;
+				public_key: string;
+			}>("generate_srp_credentials");
 
-			const srpClientStep1 = await srpClient.step1(email, password);
-			const srpClientStep2 = await srpClientStep1.step2(
-				hexToBigInt(step1Response.salt),
-				hexToBigInt(step1Response.B)
-			);
+			const m1 = await invoke<string>("calculate_srp_proof", {
+				privateKey: private_key,
+				username: email,
+				password: password,
+				salt: step1Response.salt,
+				serverB: step1Response.b,
+			});
 
-			const step2Response = await step2(
-				authId,
-				srpClientStep2.A.toString(16),
-				srpClientStep2.M1.toString(16)
-			);
-
-			await srpClientStep2.step3(hexToBigInt(step2Response.M2));
+			await step2(authId, public_key, m1);
 
 			passwords.encryptionKey = await calculateEncryptionKey(
 				password,
@@ -70,8 +66,9 @@
 			auth.loginState = "logged-in";
 			await goto("/dashboard/passwords");
 
-			console.log(auth.authToken);
+			// console.log(auth.authToken);
 		} catch (err: any) {
+			console.error(err);
 			toast.error(err.message ?? "Unknown error");
 			passwords.encryptionKey = new Uint8Array(0);
 		} finally {
