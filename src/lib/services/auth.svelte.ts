@@ -53,6 +53,7 @@ class AuthState {
 	};
 
 	private updateUser = async (
+		code: string,
 		newEmail?: string,
 		newUsername?: string,
 		salt?: string,
@@ -61,10 +62,11 @@ class AuthState {
 		await makeRequest("/users/@me", "PATCH", {
 			authorization: true,
 			body: JSON.stringify({
-				email: newEmail ? newEmail : null,
-				username: newUsername ? newUsername : null,
-				salt: salt ? salt : null,
-				verifier: verifier ? verifier : null,
+				code: code,
+				email: newEmail?.length ? newEmail : null,
+				username: newUsername?.length ? newUsername : null,
+				salt: salt?.length ? salt : null,
+				verifier: verifier?.length ? verifier : null,
 				passwords:
 					newEmail?.length || salt?.length || verifier?.length
 						? passwords.passwords.map((p) => ({
@@ -84,6 +86,7 @@ class AuthState {
 
 	public updateData = async (
 		masterPassword: string,
+		code: string,
 		newEmail?: string,
 		newUsername?: string,
 		newPassword?: string
@@ -110,7 +113,15 @@ class AuthState {
 			await passwords.encryptAllPasswords();
 		}
 
-		await this.updateUser(newEmail, newUsername, salt, verifier);
+		await this.updateUser(code, newEmail, newUsername, salt, verifier);
+	};
+
+	public invalidateSessions = async () => {
+		await makeRequest("/users/@me/sessions", "POST", {
+			authorization: true,
+		});
+
+		await this.logOut();
 	};
 
 	public logOut = async () => {

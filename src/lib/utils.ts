@@ -48,6 +48,11 @@ export const makeRequest = async (
 		});
 
 		if (!res.ok) {
+			if (res.status === 498) {
+				await auth.logOut();
+				throw new Error("Invalid or expired token");
+			}
+
 			const errorText = await res.text();
 			const errorObj = JSON.parse(errorText);
 			throw new Error(getErrorMessage(errorObj));

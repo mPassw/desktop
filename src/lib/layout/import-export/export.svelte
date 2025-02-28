@@ -70,6 +70,8 @@
 		</div>
 	</div>
 	<div class="flex w-full justify-end">
-		<Button variant="secondary" onclick={exportPasswords}>Export</Button>
+		<Button variant="secondary" size="sm" onclick={exportPasswords}>
+			Export
+		</Button>
 	</div>
 </div>

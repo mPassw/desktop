@@ -1,6 +1,7 @@
 <script lang="ts">
 	import PersonalInfo from "@/layout/my-account/personalInfo.svelte";
 	import UpdateData from "@/layout/my-account/updateData.svelte";
+	import DangerZone from "@/layout/my-account/dangerZone.svelte";
 	import auth from "@/services/auth.svelte";
 
 	import { Blurfade } from "@/components/animations/blurfade";
@@ -27,7 +28,9 @@
 	{/if}
 	<div class:blur-sm={!auth.isVerified}>
 		<PersonalInfo />
-		<Separator class="my-1" />
+		<Separator class="my-2" />
 		<UpdateData />
+		<Separator class="my-2" />
+		<DangerZone />
 	</div>
 </Blurfade>

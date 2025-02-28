@@ -16,7 +16,7 @@
 	const getCode = async () => {
 		try {
 			loadersState.isDialogLoaderVisible = true;
-			await makeRequest("/users/@me/verification", "GET", {
+			await makeRequest("/smtp/@me?Type=Verification", "GET", {
 				authorization: true,
 			});
 

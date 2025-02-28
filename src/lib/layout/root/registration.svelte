@@ -64,6 +64,10 @@
 				throw new Error("Passwords do not match");
 			}
 
+			if (regUsername.length > 0 && regUsername.length < 6) {
+				throw new Error("Username must be at least 6 characters");
+			}
+
 			if (!isPasswordValid()) {
 				throw new Error("Password does not meet requirements");
 			}

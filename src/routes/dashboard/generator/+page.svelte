@@ -129,6 +129,7 @@
 		<div>
 			<Button
 				onclick={generate}
+				size="sm"
 				disabled={passwordGenerator.isGenerating}
 				class="mt-3"
 			>

@@ -5,7 +5,7 @@
 	import { Slider } from "@/components/ui/slider";
 	import { Minus, Plus } from "lucide-svelte";
 
-	const specialMin = 1;
+	const specialMin = 0;
 	let specialMax = $derived(
 		passwordGenerator.passwordLength -
 			(passwordGenerator.passwordNumbersAmount + 2)
