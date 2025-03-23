@@ -27,7 +27,7 @@
     },
     "plugins": {
         "updater": {
-            "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEVFQjNDM0E3Njg4RjkxOTEKUldTUmtZOW9wOE96N2tBS2phSENSK2twK2k4dCtLTzQyZjFHVUowYjRIUncyUjNvT012VE1jUisK",
+            "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEQ5RDMyMjE1ODQyNDMzOEMKUldTTU15U0VGU0xUMld1VjNqMFp3RlpqOTJqR2d3ek5ZNVV6b0xXZ2p2NVU0NXYxMXhPdERlS1cK",
             "endpoints": [
                 "https://github.com/mPassw/desktop/releases/latest/download/latest.json"
             ]
