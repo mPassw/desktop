@@ -1,0 +1,52 @@
+[package]
+name = "mPass"
+version = "1.0.0"
+description = "mPass desktop app"
+authors = ["mPass.dev"]
+edition = "2021"
+
+[profile.dev]
+incremental = true
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true
+
+[lib]
+name = "mpass_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tauri-plugin-http = "2"
+tauri-plugin-store = "2.2.0"
+num-bigint = { version = "0.4.6", features = ["rand"] }
+num-traits = "0.2.19"
+argon2 = "0.5.3"
+rand = "0.9.0"
+tokio = "1.43.0"
+hex = "0.4.3"
+sha2 = "0.10.8"
+chacha20poly1305 = "0.10.1"
+tauri-plugin-os = "2.2.0"
+tauri-plugin-notification = "2.2.1"
+tauri-plugin-fs = "2.2.0"
+tauri-plugin-process = "2.2.0"
+keyring = { version = "3.6.2", features = [
+    "apple-native",
+    "windows-native",
+    "sync-secret-service",
+] }
+chrono = "0.4.40"
+
+[target.'cfg(any(target_os = "macos", windows, target_os = "linux"))'.dependencies]
+tauri-plugin-updater = "2.6.1"
